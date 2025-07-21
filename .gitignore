@@ -105,5 +105,6 @@ dmypy.json
 .pyre/
 
 # Data files
+data/
 *.parquet
 *.csv
