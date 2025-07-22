@@ -1,0 +1,104 @@
+# 因子计算与回测配置文件
+
+# 数据配置
+data:
+  start_date: "20220101"
+  end_date: "20250722"
+  universe_file: "config/universe.csv"
+  
+# 数据路径
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  factors_output: "reports/factors"
+  ic_output: "reports"
+  fusion_output: "reports"
+
+# 因子配置
+factors:
+  # 动量类因子
+  mom20:
+    enabled: true
+    window: 20
+    description: "20日动量因子"
+    
+  shortrev5:
+    enabled: true
+    window: 5
+    description: "5日短期反转因子"
+    
+  # 波动率因子
+  vol20:
+    enabled: true
+    window: 20
+    description: "20日收益率标准差"
+    
+  # 流动性因子
+  turn_mean20:
+    enabled: true
+    window: 20
+    description: "20日换手率均值"
+    
+  amihud20:
+    enabled: true
+    window: 20
+    description: "Amihud流动性因子"
+    
+  # 估值因子
+  inv_pb:
+    enabled: false  # 缺失pb数据，暂时禁用
+    description: "PB倒数"
+    
+  # 质量因子
+  roe:
+    enabled: false  # 缺失roe_ttm数据，暂时禁用
+    description: "ROE_TTM"
+    
+  # 规模因子
+  size:
+    enabled: false  # 缺失shares_out/mv数据，暂时禁用
+    description: "对数流通市值(负值)"
+
+# 数据预处理配置
+preprocessing:
+  winsorize:
+    enabled: true
+    quantiles: [0.01, 0.99]
+  zscore:
+    enabled: true
+  forward_fill:
+    enabled: true
+    max_days: 5
+
+# IC分析配置
+ic:
+  window: 60
+  min_samples: 30
+  forward_return_days: 1
+  correlation_method: "spearman"
+  
+# 因子融合配置
+fusion:
+  methods: 
+    - "equal_weight"
+    - "ic_weight" 
+    - "lgb"
+  lookback_window: 252
+  train_test_split: 0.7
+  
+  # LightGBM参数
+  lgb_params:
+    objective: "regression"
+    metric: "rmse"
+    boosting_type: "gbdt"
+    num_leaves: 31
+    learning_rate: 0.05
+    feature_fraction: 0.9
+    bagging_fraction: 0.8
+    bagging_freq: 5
+    verbose: -1
+
+# 并行计算配置
+parallel:
+  n_jobs: 4
+  use_multiprocessing: false
