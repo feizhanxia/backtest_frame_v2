@@ -44,12 +44,17 @@ def main():
         # 3. 加载IC分析结果
         print("\n3. 加载IC分析结果...")
         ic_summary = load_ic_summary()
+        ic_timeseries = load_ic_timeseries()
         
         if ic_summary.empty:
             print("⚠️  无IC分析结果，将只执行等权融合")
             print("   建议先运行 run_ic.py 生成IC分析")
         else:
             print(f"   IC摘要数据形状: {ic_summary.shape}")
+            if not ic_timeseries.empty:
+                print(f"   IC时间序列形状: {ic_timeseries.shape}")
+            else:
+                print("⚠️  无IC时间序列数据，将跳过IC加权融合")
         
         # 4. 获取前瞻收益率（用于LightGBM融合）
         print("\n4. 加载前瞻收益率数据...")
@@ -63,25 +68,41 @@ def main():
         # 5. 执行多种融合方法
         print("\n5. 执行因子融合...")
         
-        # 确定可用的融合方法
-        available_methods = ['equal_weight']
-        if not ic_summary.empty:
-            available_methods.append('ic_weight')
+        fusion_results = {}
+        
+        # 等权融合
+        print("   执行等权融合...")
+        try:
+            equal_weights = fusion_engine.equal_weight_fusion(factor_names)
+            equal_factor = fusion_engine.apply_weights(factors_df, equal_weights)
+            fusion_results['equal_weight'] = equal_factor
+            print(f"   ✅ 等权融合完成: {equal_factor.shape}")
+        except Exception as e:
+            print(f"   ❌ 等权融合失败: {e}")
+        
+        # IC加权融合
+        if not ic_timeseries.empty:
+            print("   执行IC加权融合...")
+            try:
+                ic_weights = fusion_engine.ic_weight_fusion(ic_timeseries)
+                ic_factor = fusion_engine.apply_weights(factors_df, ic_weights)
+                fusion_results['ic_weight'] = ic_factor
+                print(f"   ✅ IC加权融合完成: {ic_factor.shape}")
+            except Exception as e:
+                print(f"   ❌ IC加权融合失败: {e}")
+        
+        # LightGBM融合（跳过，因为太耗时）
         if not ret_df.empty:
-            available_methods.append('lgb')
-        
-        print(f"   可用融合方法: {available_methods}")
-        
-        # 执行融合
-        fusion_results = fusion_engine.fuse_factors(
-            factors_df=factors_df,
-            ic_summary=ic_summary if not ic_summary.empty else None,
-            ret_df=ret_df if not ret_df.empty else None,
-            methods=available_methods
-        )
+            print("   跳过LightGBM融合（过于耗时）")
+            # 如果需要可以启用：
+            # try:
+            #     lgb_factor = fusion_engine.lgb_fusion(factors_df, ret_df)
+            #     fusion_results['lgb'] = lgb_factor
+            # except Exception as e:
+            #     print(f"   ❌ LightGBM融合失败: {e}")
         
         if not fusion_results:
-            print("❌ 融合失败，无有效结果")
+            print("❌ 所有融合方法都失败了")
             return False
         
         # 6. 保存融合结果
@@ -114,6 +135,19 @@ def load_ic_summary():
             return pd.DataFrame()
     except Exception as e:
         print(f"   加载IC摘要时出错: {e}")
+        return pd.DataFrame()
+
+
+def load_ic_timeseries():
+    """加载IC时间序列"""
+    try:
+        ic_timeseries_path = PROJECT_ROOT / "reports" / "ic_timeseries.csv"
+        if ic_timeseries_path.exists():
+            return pd.read_csv(ic_timeseries_path, index_col=0, encoding='utf-8')
+        else:
+            return pd.DataFrame()
+    except Exception as e:
+        print(f"   加载IC时间序列时出错: {e}")
         return pd.DataFrame()
 
 

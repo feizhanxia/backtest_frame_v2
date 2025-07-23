@@ -58,6 +58,14 @@ factors:
   size:
     enabled: false  # 缺失shares_out/mv数据，暂时禁用
     description: "对数流通市值(负值)"
+    
+  # MACD因子
+  macd:
+    enabled: true
+    fast: 12
+    slow: 26
+    signal: 9
+    description: "MACD信号线因子"
 
 # 数据预处理配置
 preprocessing:

@@ -68,6 +68,26 @@ class FactorEngine:
         returns = close.pct_change(fill_method=None)
         return returns.rolling(window).std()
     
+    def macd_signal(self, close: pd.DataFrame, fast: int = 12, slow: int = 26, signal: int = 9) -> pd.DataFrame:
+        """MACD信号线因子
+        
+        Args:
+            close: 收盘价矩阵
+            fast: 快线周期
+            slow: 慢线周期  
+            signal: 信号线周期
+            
+        Returns:
+            MACD信号因子矩阵
+        """
+        ema_fast = close.ewm(span=fast).mean()
+        ema_slow = close.ewm(span=slow).mean()
+        dif = ema_fast - ema_slow
+        dea = dif.ewm(span=signal).mean()
+        macd = 2 * (dif - dea)
+        
+        return macd
+    
     # ========== 量价因子 ==========
     
     def turnover_mean(self, vol: pd.DataFrame, amount: pd.DataFrame, window: int = 20) -> pd.DataFrame:
@@ -264,6 +284,12 @@ class FactorEngine:
             elif factor_name == 'vol20':
                 window = factor_config.get('window', 20)
                 factor_raw = self.volatility_20(price_data['close'], window)
+                
+            elif factor_name == 'macd':
+                fast = factor_config.get('fast', 12)
+                slow = factor_config.get('slow', 26)
+                signal = factor_config.get('signal', 9)
+                factor_raw = self.macd_signal(price_data['close'], fast, slow, signal)
                 
             elif factor_name == 'turn_mean20':
                 window = factor_config.get('window', 20)
