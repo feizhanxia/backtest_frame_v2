@@ -32,12 +32,23 @@ def main():
         # 2. 加载基础数据
         print("\n2. 加载价格和财务数据...")
         price_data = data_interface.get_price_data()
-        financial_data = data_interface.get_financial_data()
-        universe = data_interface.get_universe()
         
-        print(f"   价格数据形状: {price_data.shape}")
-        print(f"   财务数据形状: {financial_data.shape}")
-        print(f"   股票池大小: {len(universe)} 只股票")
+        # 检查价格数据状态
+        if not price_data or all(df.empty for df in price_data.values()):
+            print("❌ 价格数据为空")
+            return False
+        
+        # 获取主要信息
+        close_data = price_data.get('close', pd.DataFrame())
+        if not close_data.empty:
+            print(f"   价格数据形状: {close_data.shape}")
+            print(f"   股票池大小: {len(close_data.columns)} 只股票")
+        else:
+            print("❌ 收盘价数据为空")
+            return False
+        
+        # 财务数据目前不可用，使用空字典
+        financial_data = {}
         
         # 3. 计算所有因子
         print("\n3. 计算所有配置的因子...")
@@ -52,8 +63,9 @@ def main():
         
         # 4. 保存因子数据
         print("\n4. 保存因子数据...")
-        save_path = data_interface.save_factor_data(factors_df, "all_factors")
-        print(f"   因子数据已保存至: {save_path}")
+        data_interface.save_factor_data(factors_df, "all_factors")
+        output_path = PROJECT_ROOT / "reports" / "factors" / "all_factors.parquet"
+        print(f"   因子数据已保存至: {output_path}")
         
         # 5. 生成简单统计报告
         print("\n5. 生成因子统计报告...")
