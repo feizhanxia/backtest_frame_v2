@@ -8,6 +8,7 @@ import os
 import pandas as pd
 import tushare as ts
 import logging
+import time
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -23,6 +24,7 @@ def get_all_etfs():
     """获取所有ETF"""
     try:
         etf_basic = pro.fund_basic(market='E')
+        time.sleep(1.2)  # API频率控制：每分钟不超过50次
         if etf_basic.empty:
             return pd.DataFrame()
         
@@ -49,6 +51,7 @@ def get_all_indices():
     # 上交所指数
     try:
         sse_indices = pro.index_basic(market='SSE')
+        time.sleep(1.2)  # API频率控制：每分钟不超过50次
         if not sse_indices.empty:
             for _, idx in sse_indices.iterrows():
                 all_indices.append({
@@ -64,6 +67,7 @@ def get_all_indices():
     # 深交所指数
     try:
         szse_indices = pro.index_basic(market='SZSE')
+        time.sleep(1.2)  # API频率控制：每分钟不超过50次
         if not szse_indices.empty:
             for _, idx in szse_indices.iterrows():
                 all_indices.append({
@@ -79,6 +83,7 @@ def get_all_indices():
     # 中证指数
     try:
         csi_indices = pro.index_basic(market='CSI')
+        time.sleep(1.2)  # API频率控制：每分钟不超过50次
         if not csi_indices.empty:
             for _, idx in csi_indices.iterrows():
                 all_indices.append({
@@ -94,6 +99,7 @@ def get_all_indices():
     # 国证指数
     try:
         cni_indices = pro.index_basic(market='CNI')
+        time.sleep(1.2)  # API频率控制：每分钟不超过50次
         if not cni_indices.empty:
             for _, idx in cni_indices.iterrows():
                 all_indices.append({

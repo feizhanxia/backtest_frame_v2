@@ -28,7 +28,7 @@ logger = logging.getLogger("etf_data_warehouse")
 
 # 配置参数
 BASE  = Path(__file__).resolve().parents[1]   # 项目根目录
-THREADS = 5  # 并行线程数
+THREADS = 1  # 并行线程数
 
 def process_target(code, force_refresh=False):
     """处理单个ETF/指数的数据获取和清洗流程
