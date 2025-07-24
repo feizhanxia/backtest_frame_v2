@@ -193,12 +193,12 @@ class ICEngine:
         return ic_df
     
     def rank_factors(self, ic_summary_dict: Dict[str, Dict[str, float]], 
-                    primary_metric: str = 'ic_ir_60d') -> pd.DataFrame:
+                    primary_metric: str = 'ic_ir_full') -> pd.DataFrame:
         """根据IC指标对因子进行排序
         
         Args:
             ic_summary_dict: 因子IC摘要字典 {factor_name: {metric: value}}
-            primary_metric: 主要排序指标
+            primary_metric: 主要排序指标（默认使用全量IR）
             
         Returns:
             因子排名表 DataFrame
@@ -212,30 +212,15 @@ class ICEngine:
         if summary_df.empty:
             return pd.DataFrame()
         
-        # 按主要指标排序（降序）
+        # 首先按主要指标排序（降序，按绝对值）
         if primary_metric in summary_df.columns:
-            summary_df = summary_df.sort_values(primary_metric, ascending=False)
+            # 使用绝对值排序，但保持原值
+            summary_df['abs_primary_metric'] = summary_df[primary_metric].abs()
+            summary_df = summary_df.sort_values('abs_primary_metric', ascending=False)
+            summary_df = summary_df.drop('abs_primary_metric', axis=1)
         
         # 添加排名列
         summary_df['rank'] = range(1, len(summary_df) + 1)
-        
-        # 计算综合得分（可选）
-        score_components = []
-        weights = {'ic_ir_60d': 0.4, 'abs_ic_mean': 0.3, 'win_rate': 0.3}
-        
-        for metric, weight in weights.items():
-            if metric in summary_df.columns:
-                # 标准化到0-1范围
-                values = summary_df[metric].fillna(0)
-                if values.std() > 0:
-                    normalized = (values - values.min()) / (values.max() - values.min())
-                    score_components.append(normalized * weight)
-        
-        if score_components:
-            summary_df['composite_score'] = sum(score_components)
-            # 按综合得分重新排序
-            summary_df = summary_df.sort_values('composite_score', ascending=False)
-            summary_df['rank'] = range(1, len(summary_df) + 1)
         
         return summary_df
     

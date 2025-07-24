@@ -370,3 +370,127 @@
 2025-07-25 00:20:08,456 - etf_data_warehouse - INFO - ✅ 510300.SH 数据处理完成 (861个交易日)
 2025-07-25 00:20:08,457 - etf_data_warehouse - INFO - ✅ 512100.SH 数据处理完成 (860个交易日)
 2025-07-25 00:20:08,457 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 13/13 只股票
+2025-07-25 00:43:11,227 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:43:11,231 - etf_data_warehouse - INFO - 标的池读取成功，共 8082 个标的 (来源: universe_small.csv)
+2025-07-25 00:43:18,748 - etf_data_warehouse - WARNING - ⚠️ 159241.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:18,752 - etf_data_warehouse - WARNING - ⚠️ 159226.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:18,982 - etf_data_warehouse - WARNING - ⚠️ 159239.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:19,688 - etf_data_warehouse - WARNING - ⚠️ 588130.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:22,294 - etf_data_warehouse - WARNING - ⚠️ 563830.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:24,548 - etf_data_warehouse - WARNING - ⚠️ 159218.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:26,428 - etf_data_warehouse - WARNING - ⚠️ 563060.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:27,203 - etf_data_warehouse - WARNING - ⚠️ 563550.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:28,683 - etf_data_warehouse - WARNING - ⚠️ 159229.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:31,258 - etf_data_warehouse - WARNING - ⚠️ 159227.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:33,521 - etf_data_warehouse - WARNING - ⚠️ 563680.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:35,148 - etf_data_warehouse - WARNING - ⚠️ 159236.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:38,097 - etf_data_warehouse - WARNING - ⚠️ 563770.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:38,232 - etf_data_warehouse - WARNING - ⚠️ 159221.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:39,595 - etf_data_warehouse - WARNING - ⚠️ 159392.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:39,746 - etf_data_warehouse - WARNING - ⚠️ 563780.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:41,361 - etf_data_warehouse - WARNING - ⚠️ 159220.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:44,027 - etf_data_warehouse - WARNING - ⚠️ 561870.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:44,383 - etf_data_warehouse - WARNING - ⚠️ 159208.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:45,573 - etf_data_warehouse - WARNING - ⚠️ 508085.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:46,736 - etf_data_warehouse - WARNING - ⚠️ 589980.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:47,539 - etf_data_warehouse - WARNING - ⚠️ 563900.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:50,006 - etf_data_warehouse - WARNING - ⚠️ 159219.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:50,438 - etf_data_warehouse - WARNING - ⚠️ 159382.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:51,718 - etf_data_warehouse - WARNING - ⚠️ 159235.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:52,856 - etf_data_warehouse - WARNING - ⚠️ 561080.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:53,534 - etf_data_warehouse - WARNING - ⚠️ 159232.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:54,325 - etf_data_warehouse - WARNING - ⚠️ 516460.SH 数据量不足（仅60个交易日），跳过处理
+2025-07-25 00:43:55,909 - etf_data_warehouse - WARNING - ⚠️ 563390.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:56,173 - etf_data_warehouse - WARNING - ⚠️ 159213.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:57,580 - etf_data_warehouse - WARNING - ⚠️ 510320.SH 数据量不足（仅61个交易日），跳过处理
+2025-07-25 00:43:57,926 - etf_data_warehouse - WARNING - ⚠️ 159231.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:43:59,722 - etf_data_warehouse - WARNING - ⚠️ 563700.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:00,739 - etf_data_warehouse - WARNING - ⚠️ 588850.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:02,435 - etf_data_warehouse - WARNING - ⚠️ 563990.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:03,348 - etf_data_warehouse - WARNING - ⚠️ 159225.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:09,839 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:44:09,840 - etf_data_warehouse - INFO - 标的池读取成功，共 2183 个标的 (来源: universe_small.csv)
+2025-07-25 00:44:15,615 - etf_data_warehouse - WARNING - ⚠️ 563830.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:15,625 - etf_data_warehouse - WARNING - ⚠️ 588130.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:16,061 - etf_data_warehouse - WARNING - ⚠️ 159239.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:16,180 - etf_data_warehouse - WARNING - ⚠️ 159241.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:44:16,371 - etf_data_warehouse - WARNING - ⚠️ 159226.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:45:27,552 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:45:27,553 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的 (来源: universe_small.csv)
+2025-07-25 00:45:29,789 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (1348个交易日)
+2025-07-25 00:45:30,013 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:30,083 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:30,084 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:30,084 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:31,890 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:32,150 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:45:32,154 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (2566个交易日)
+2025-07-25 00:45:32,278 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:45:32,279 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票
+2025-07-25 00:45:51,721 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:45:51,722 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的 (来源: universe_small.csv)
+2025-07-25 00:45:51,761 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:51,762 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:51,762 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:51,762 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:51,772 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (2566个交易日)
+2025-07-25 00:45:51,773 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:45:51,773 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:45:51,773 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:53,835 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (1348个交易日)
+2025-07-25 00:45:53,836 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票
+2025-07-25 00:45:55,430 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:45:55,431 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的 (来源: universe_small.csv)
+2025-07-25 00:45:55,471 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:55,471 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:55,471 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:55,472 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:55,482 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:45:55,483 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:45:55,483 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:45:55,483 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (2566个交易日)
+2025-07-25 00:45:57,410 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (1348个交易日)
+2025-07-25 00:45:57,411 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票
+2025-07-25 00:46:34,466 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:46:34,467 - etf_data_warehouse - INFO - 标的池读取成功，共 16 个标的 (来源: universe_small.csv)
+2025-07-25 00:46:34,507 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:46:34,507 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:46:34,507 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:46:34,508 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:46:34,518 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (2566个交易日)
+2025-07-25 00:46:34,519 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:46:34,519 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:46:34,519 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:46:36,979 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (1348个交易日)
+2025-07-25 00:46:40,373 - etf_data_warehouse - WARNING - ⚠️ 563660.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:46:40,652 - etf_data_warehouse - WARNING - ⚠️ 588170.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:46:40,677 - etf_data_warehouse - WARNING - ⚠️ 508055.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:46:42,340 - etf_data_warehouse - WARNING - ⚠️ 588910.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:46:43,776 - etf_data_warehouse - WARNING - ⚠️ 589060.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:46:46,786 - etf_data_warehouse - WARNING - ⚠️ 560630.SH 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:46:47,575 - etf_data_warehouse - WARNING - ⚠️ 159316.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-25 00:46:47,576 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/16 只股票
+2025-07-25 00:51:37,194 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:51:37,194 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的 (来源: universe_small.csv)
+2025-07-25 00:51:37,241 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:51:37,242 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:51:37,242 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:51:37,242 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:51:37,250 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:51:37,252 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (2566个交易日)
+2025-07-25 00:51:37,252 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:51:37,252 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:51:39,182 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (1348个交易日)
+2025-07-25 00:51:39,183 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票
+2025-07-25 00:55:37,039 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-25 00:55:37,040 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的 (来源: universe_small.csv)
+2025-07-25 00:55:37,085 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (1348个交易日)
+2025-07-25 00:55:37,086 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,087 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,087 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,088 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,093 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,096 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,096 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,097 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (2566个交易日)
+2025-07-25 00:55:37,097 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票

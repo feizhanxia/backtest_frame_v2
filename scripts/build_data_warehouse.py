@@ -27,7 +27,6 @@ logging.basicConfig(
 logger = logging.getLogger("etf_data_warehouse")
 
 # 配置参数
-START = "20150101"
 BASE  = Path(__file__).resolve().parents[1]   # 项目根目录
 THREADS = 5  # 并行线程数
 
@@ -42,8 +41,8 @@ def process_target(code, force_refresh=False):
         成功处理返回True，否则返回False
     """
     try:
-        # 获取日线数据（自动识别资产类型，带缓存检查）
-        price = F.fetch_daily_with_cache(code, START, dt.date.today().strftime("%Y%m%d"), 
+        # 获取日线数据（自动获取全部历史数据，带缓存检查）
+        price = F.fetch_daily_with_cache(code, start=None, end=dt.date.today().strftime("%Y%m%d"), 
                                         base_dir=str(BASE), force_refresh=force_refresh)
         
         # 检查数据是否有效（至少要有一定的数据量）

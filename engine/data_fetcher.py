@@ -11,27 +11,29 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="tushare")
 
 pro = ts.pro_api(os.getenv("TUSHARE_TOKEN"))
 
-def _get_data_hash(ts_code: str, start: str, end: str) -> str:
+def _get_data_hash(ts_code: str, start: str = None, end: str = None) -> str:
     """生成数据请求的哈希标识
     
     Args:
         ts_code: 标的代码
-        start: 起始日期
-        end: 结束日期
+        start: 起始日期，None表示全部历史
+        end: 结束日期，None表示到今天
         
     Returns:
         数据请求的哈希字符串
     """
-    request_str = f"{ts_code}_{start}_{end}"
+    start_str = start if start is not None else "all"
+    end_str = end if end is not None else "today"
+    request_str = f"{ts_code}_{start_str}_{end_str}"
     return hashlib.md5(request_str.encode()).hexdigest()[:12]
 
-def _check_existing_data(ts_code: str, start: str, end: str, base_dir: str = None) -> pd.DataFrame:
+def _check_existing_data(ts_code: str, start: str = None, end: str = None, base_dir: str = None) -> pd.DataFrame:
     """检查是否已有相同时间范围的数据
     
     Args:
         ts_code: 标的代码
-        start: 起始日期，格式YYYYMMDD
-        end: 结束日期，格式YYYYMMDD
+        start: 起始日期，格式YYYYMMDD。None表示从最早开始
+        end: 结束日期，格式YYYYMMDD。None表示到今天
         base_dir: 基础目录（可选）
         
     Returns:
@@ -55,29 +57,46 @@ def _check_existing_data(ts_code: str, start: str, end: str, base_dir: str = Non
         if not isinstance(existing_df.index, pd.DatetimeIndex):
             existing_df.index = pd.to_datetime(existing_df.index)
         
-        # 转换请求的日期格式
-        start_date = pd.to_datetime(start, format='%Y%m%d')
+        # 设置默认结束日期为今天
+        if end is None:
+            import datetime as dt
+            end = dt.date.today().strftime("%Y%m%d")
+        
         end_date = pd.to_datetime(end, format='%Y%m%d')
         
         # 检查现有数据的时间范围
         data_start = existing_df.index.min()
         data_end = existing_df.index.max()
         
-        # 检查数据覆盖情况：
-        # 1. 起始日期：现有数据开始日期应该接近或早于请求日期（允许几天差异，因为交易日历差异）
-        # 2. 结束日期：现有数据应该足够新（最多滞后1天）
-        
-        start_gap = (data_start - start_date).days
-        end_gap = (end_date - data_end).days
-        
-        # 起始日期检查：允许现有数据稍晚开始（因为交易日历），但不超过5天
-        start_ok = start_gap <= 5
-        # 结束日期检查：允许最多滞后1天
-        end_ok = end_gap <= 1
-        
-        if start_ok and end_ok:
-            # 过滤到有效数据范围
-            actual_start = max(start_date, data_start)
+        # 如果start为None，表示要获取全部历史数据，不检查起始日期
+        if start is None:
+            # 只检查结束日期：现有数据应该足够新（最多滞后1天）
+            end_gap = (end_date - data_end).days
+            if end_gap <= 1:
+                print(f"✅ {ts_code} 使用缓存数据 ({len(existing_df)}天, {data_start.strftime('%Y-%m-%d')}~{data_end.strftime('%Y-%m-%d')})")
+                return existing_df
+            else:
+                print(f"🔄 {ts_code} 数据需要更新 (现有数据到: {data_end.strftime('%Y-%m-%d')}, 需要到: {end_date.strftime('%Y-%m-%d')})")
+                return pd.DataFrame()
+        else:
+            # 转换请求的起始日期格式
+            start_date = pd.to_datetime(start, format='%Y%m%d')
+            
+            # 检查数据覆盖情况：
+            # 1. 起始日期：现有数据开始日期应该接近或早于请求日期（允许几天差异，因为交易日历差异）
+            # 2. 结束日期：现有数据应该足够新（最多滞后1天）
+            
+            start_gap = (data_start - start_date).days
+            end_gap = (end_date - data_end).days
+            
+            # 起始日期检查：允许现有数据稍晚开始（因为交易日历），但不超过5天
+            start_ok = start_gap <= 5
+            # 结束日期检查：允许最多滞后1天
+            end_ok = end_gap <= 1
+            
+            if start_ok and end_ok:
+                # 过滤到有效数据范围
+                actual_start = max(start_date, data_start)
             actual_end = min(end_date, data_end)  
             mask = (existing_df.index >= actual_start) & (existing_df.index <= actual_end)
             filtered_df = existing_df[mask]
@@ -95,14 +114,14 @@ def _check_existing_data(ts_code: str, start: str, end: str, base_dir: str = Non
         print(f"⚠️ 检查 {ts_code} 缓存时出错: {e}")
         return pd.DataFrame()
 
-def fetch_daily_with_cache(ts_code: str, start: str, end: str, asset_type: str = 'auto', 
+def fetch_daily_with_cache(ts_code: str, start: str = None, end: str = None, asset_type: str = 'auto', 
                           base_dir: str = None, force_refresh: bool = False) -> pd.DataFrame:
     """获取日线数据（带缓存检查）
     
     Args:
         ts_code: 标的代码（如：000001.SZ, 510050.SH, 000300.SH）
-        start: 起始日期，格式YYYYMMDD
-        end: 结束日期，格式YYYYMMDD
+        start: 起始日期，格式YYYYMMDD。None表示获取全部历史数据
+        end: 结束日期，格式YYYYMMDD。None表示到今天
         asset_type: 资产类型，'stock'(股票), 'fund'(ETF), 'index'(指数), 'auto'(自动识别)
         base_dir: 基础目录路径
         force_refresh: 是否强制刷新数据
@@ -110,6 +129,11 @@ def fetch_daily_with_cache(ts_code: str, start: str, end: str, asset_type: str =
     Returns:
         前复权后的日线数据，以trade_date为索引
     """
+    # 设置默认结束日期为今天
+    if end is None:
+        import datetime as dt
+        end = dt.date.today().strftime("%Y%m%d")
+    
     # 如果不强制刷新，先检查现有数据
     if not force_refresh:
         existing_data = _check_existing_data(ts_code, start, end, base_dir)
@@ -120,19 +144,24 @@ def fetch_daily_with_cache(ts_code: str, start: str, end: str, asset_type: str =
     print(f"🔄 {ts_code} 从API获取数据...")
     return fetch_daily(ts_code, start, end, asset_type)
 
-def fetch_daily(ts_code: str, start: str, end: str, asset_type: str = 'auto') -> pd.DataFrame:
+def fetch_daily(ts_code: str, start: str = None, end: str = None, asset_type: str = 'auto') -> pd.DataFrame:
     """获取日线数据（股票/ETF/指数，已前复权）
     
     Args:
         ts_code: 标的代码（如：000001.SZ, 510050.SH, 000300.SH）
-        start: 起始日期，格式YYYYMMDD
-        end: 结束日期，格式YYYYMMDD
+        start: 起始日期，格式YYYYMMDD。None表示获取全部历史数据
+        end: 结束日期，格式YYYYMMDD。None表示到今天
         asset_type: 资产类型，'stock'(股票), 'fund'(ETF), 'index'(指数), 'auto'(自动识别)
         
     Returns:
         前复权后的日线数据，以trade_date为索引
     """
     try:
+        # 设置默认结束日期为今天
+        if end is None:
+            import datetime as dt
+            end = dt.date.today().strftime("%Y%m%d")
+            
         # 自动识别资产类型
         if asset_type == 'auto':
             if ts_code.startswith(('510', '511', '512', '513', '515', '516', '518')):
