@@ -32,7 +32,7 @@ class DataInterface:
             return yaml.safe_load(f)
     
     def _load_universe(self) -> List[str]:
-        """加载股票池"""
+        """加载ETF/指数池"""
         universe_file = self.base_path / self.config['data']['universe_file']
         if universe_file.exists():
             df = pd.read_csv(universe_file)
@@ -147,81 +147,9 @@ class DataInterface:
                     price_data[field] = pd.DataFrame(index=common_index)
         
         print(f"价格数据读取完成，共{len(common_index) if common_index is not None else 0}个交易日，"
-              f"{len(price_data['close'].columns) if not price_data['close'].empty else 0}只股票")
+              f"{len(price_data['close'].columns) if not price_data['close'].empty else 0}个标的")
         
         return price_data
-    
-    def get_financial_data(self, start_date: str = None, end_date: str = None) -> Dict[str, pd.DataFrame]:
-        """获取财务数据
-        
-        Args:
-            start_date: 开始日期，格式YYYY-MM-DD
-            end_date: 结束日期，格式YYYY-MM-DD
-            
-        Returns:
-            包含各财务字段的字典 {'roe_ttm': DataFrame, 'pb': DataFrame, ...}
-        """
-        start_date = start_date or self.config['data']['start_date']
-        end_date = end_date or self.config['data']['end_date']
-        
-        # 读取原始财务数据
-        raw_path = self.base_path / self.config['paths']['raw_data']
-        
-        # 初始化结果字典
-        financial_data = {
-            'roe_ttm': pd.DataFrame(),
-            'pb': pd.DataFrame()
-        }
-        
-        print(f"正在读取财务数据: {start_date} 到 {end_date}")
-        
-        for ts_code in self.universe:
-            fin_files = glob.glob(str(raw_path / f"{ts_code}_financial_*.parquet"))
-            if not fin_files:
-                continue
-                
-            # 读取最新的财务文件
-            fin_file = sorted(fin_files)[-1]
-            try:
-                df = pd.read_parquet(fin_file)
-                df['trade_date'] = pd.to_datetime(df['trade_date'])
-                df = df.set_index('trade_date').sort_index()
-                
-                # 过滤日期范围
-                mask = (df.index >= start_date) & (df.index <= end_date)
-                df = df[mask]
-                
-                if df.empty:
-                    continue
-                
-                # 提取各字段
-                for field in financial_data.keys():
-                    if field in df.columns:
-                        if financial_data[field].empty:
-                            financial_data[field] = pd.DataFrame(index=df.index)
-                        financial_data[field][ts_code] = df[field]
-                        
-            except Exception as e:
-                print(f"读取 {ts_code} 财务数据失败: {e}")
-                continue
-        
-        # 对齐所有数据的索引
-        common_index = None
-        for field, df in financial_data.items():
-            if not df.empty:
-                if common_index is None:
-                    common_index = df.index
-                else:
-                    common_index = common_index.intersection(df.index)
-        
-        if common_index is not None:
-            for field in financial_data.keys():
-                financial_data[field] = financial_data[field].reindex(common_index).sort_index()
-        
-        print(f"财务数据读取完成，共{len(common_index) if common_index is not None else 0}个交易日，"
-              f"{len(financial_data['roe_ttm'].columns) if not financial_data['roe_ttm'].empty else 0}只股票")
-        
-        return financial_data
     
     def get_forward_returns(self, days: int = 1, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """获取前瞻收益率
@@ -247,7 +175,7 @@ class DataInterface:
         return forward_ret
     
     def get_universe(self) -> List[str]:
-        """获取股票池"""
+        """获取标的池"""
         return self.universe
     
     def save_factor_data(self, factor_data: pd.DataFrame, factor_name: str):

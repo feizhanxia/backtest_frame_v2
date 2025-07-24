@@ -8,31 +8,54 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="tushare")
 
 pro = ts.pro_api(os.getenv("TUSHARE_TOKEN"))
 
-def fetch_daily(ts_code: str, start: str, end: str) -> pd.DataFrame:
-    """获取股票日线数据（已前复权）
+def fetch_daily(ts_code: str, start: str, end: str, asset_type: str = 'auto') -> pd.DataFrame:
+    """获取日线数据（股票/ETF/指数，已前复权）
     
     Args:
-        ts_code: 股票代码（如：000001.SZ）
+        ts_code: 标的代码（如：000001.SZ, 510050.SH, 000300.SH）
         start: 起始日期，格式YYYYMMDD
         end: 结束日期，格式YYYYMMDD
+        asset_type: 资产类型，'stock'(股票), 'fund'(ETF), 'index'(指数), 'auto'(自动识别)
         
     Returns:
         前复权后的日线数据，以trade_date为索引
     """
     try:
-        # 使用pro_bar接口直接获取前复权(qfq)数据
-        df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
-                        adj='qfq', freq='D', asset='E')
+        # 自动识别资产类型
+        if asset_type == 'auto':
+            if ts_code.startswith(('510', '511', '512', '513', '515', '516', '518')):
+                asset_type = 'fund'  # ETF
+            elif ts_code.startswith(('000', '399')) and ('SH' in ts_code or 'SZ' in ts_code):
+                # 指数（000300.SH, 399001.SZ等）
+                asset_type = 'index'
+            else:
+                asset_type = 'stock'  # 默认为股票
         
+        # 根据资产类型选择合适的接口
+        if asset_type == 'fund':
+            # ETF使用fund_daily接口
+            df = pro.fund_daily(ts_code=ts_code, start_date=start, end_date=end)
+            if df is None or df.empty:
+                # 备选：使用pro_bar接口
+                df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
+                               adj='qfq', freq='D', asset='FD')
+        elif asset_type == 'index':
+            # 指数使用index_daily接口
+            df = pro.index_daily(ts_code=ts_code, start_date=start, end_date=end)
+            if df is None or df.empty:
+                # 备选：使用pro_bar接口
+                df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
+                               freq='D', asset='I')
+        else:
+            # 股票使用原有逻辑
+            df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
+                           adj='qfq', freq='D', asset='E')
+        
+        # 如果主要接口失败，尝试通用pro_bar接口
         if df is None or df.empty:
-            print(f"警告：使用pro_bar获取 {ts_code} 的数据为空，尝试使用替代接口...")
-            # 如果获取不到数据，尝试使用ts.get_hist_data作为备选方案
-            code = ts_code.split('.')[0]
-            df_alt = ts.get_hist_data(code, start=start, end=end)
-            if df_alt is not None and not df_alt.empty:
-                df_alt = df_alt.reset_index()
-                df_alt['ts_code'] = ts_code
-                df = df_alt.rename(columns={'date':'trade_date'})
+            print(f"警告：主接口获取 {ts_code} 的数据为空，尝试通用接口...")
+            df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
+                           adj='qfq', freq='D')
         
         # 如果数据仍然为空，则记录错误
         if df is None or df.empty:
@@ -47,6 +70,11 @@ def fetch_daily(ts_code: str, start: str, end: str) -> pd.DataFrame:
         if missing_cols:
             raise ValueError(f"获取的数据缺少必要的列：{missing_cols}")
         
+        # 确保包含vol和amount列（某些指数可能没有）
+        if 'vol' not in df.columns:
+            df['vol'] = 0  # 指数没有成交量，设为0
+        if 'amount' not in df.columns:
+            df['amount'] = 0  # 指数没有成交额，设为0
         # 转换日期格式
         df["trade_date"] = pd.to_datetime(df["trade_date"])
         
@@ -57,35 +85,5 @@ def fetch_daily(ts_code: str, start: str, end: str) -> pd.DataFrame:
         # 创建一个空的DataFrame作为替代
         return pd.DataFrame(columns=["ts_code", "open", "high", "low", "close", "vol", "amount"])
 
-def fetch_financial(ts_code: str, start_q: str) -> pd.DataFrame:
-    """获取简化版财务指标数据 - 仅返回基本结构而不获取实际财务数据
-    
-    Args:
-        ts_code: 股票代码（如：000001.SZ）
-        start_q: 起始季度，格式YYYYMMDD
-        
-    Returns:
-        简化的财务数据框架，包含基本列但值为空
-    """
-    # 创建一个空的DataFrame，仅包含必要的列结构
-    # 这避免了因TuShare API限制导致的错误
-    today = dt.datetime.today()
-    # 创建一些模拟日期，这些将作为空数据的占位符
-    dates = [
-        today - dt.timedelta(days=90),
-        today - dt.timedelta(days=180),
-        today - dt.timedelta(days=270),
-        today - dt.timedelta(days=360)
-    ]
-    
-    # 创建一个包含基本结构的DataFrame
-    fin = pd.DataFrame({
-        "end_date": dates,
-        "pub_date": [d + dt.timedelta(days=30) for d in dates]  # 发布日期通常在报告期后约30天
-    })
-    
-    # 添加空的财务指标列
-    fin["roe_ttm"] = None
-    fin["pb"] = None
-    
-    return fin
+# 删除财务数据获取函数，ETF/指数不需要财务数据
+# def fetch_financial() 函数已移除

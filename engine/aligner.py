@@ -4,6 +4,24 @@ import logging
 # 设置pandas选项，选择未来行为，避免FutureWarning
 pd.set_option('future.no_silent_downcasting', True)
 
+def align_data(price_data: pd.DataFrame, fin_data: pd.DataFrame = None) -> pd.DataFrame:
+    """对齐价格数据和财务数据（ETF/指数简化版）
+    
+    Args:
+        price_data: 价格数据
+        fin_data: 财务数据（对于ETF/指数可以为None）
+        
+    Returns:
+        对齐后的数据
+    """
+    if fin_data is None or fin_data.empty:
+        # ETF/指数情况：只返回价格数据
+        return price_data
+    else:
+        # 股票情况：对齐财务数据到价格数据
+        aligned_fin = align_financial_to_daily(fin_data, price_data.index)
+        return price_data.join(aligned_fin, how='left')
+
 def align_financial_to_daily(fin: pd.DataFrame, dates: pd.DatetimeIndex) -> pd.DataFrame:
     """将财报数据对齐到日线数据，确保无前视偏差
     

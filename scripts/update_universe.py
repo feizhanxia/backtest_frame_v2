@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-股票池更新工具
+ETF/指数池更新工具
 
-此脚本用于从Tushare API自动获取股票列表，并更新config/universe.csv文件。
-支持按指数成分股、市场类型和市值大小进行过滤。
+此脚本用于从Tushare API自动获取ETF和指数列表，并更新config/universe.csv文件。
+支持按类型、规模和流动性进行过滤。
 
 使用示例:
-    # 获取沪深300成分股（默认）
+    # 获取主要ETF（默认）
     python update_universe.py
     
-    # 获取中证500成分股
-    python update_universe.py --index_code 000905.SH
+    # 获取所有ETF
+    python update_universe.py --etf_type all
     
-    # 获取科创板股票
-    python update_universe.py --market 科创板 --index_code None
+    # 获取指数
+    python update_universe.py --target_type index
 """
 
 import os
@@ -49,82 +49,134 @@ if not token:
 # 初始化Tushare
 pro = ts.pro_api(token)
 
-def get_stock_list(index_code: str | None = None,
-                   market: str | None = None) -> pd.DataFrame:
+def get_etf_list(etf_type: str = 'main', min_size: float = 1.0) -> pd.DataFrame:
     """
-    获取股票列表，只做两件事：
-    1) 从 Tushare 拉取全部在市股票；
-    2) 可选：按 market 或 index_code 过滤。
-    返回只含 ts_code 列的 DataFrame。
+    获取ETF列表
+    
+    Args:
+        etf_type: ETF类型，'main'(主要ETF), 'all'(所有ETF)
+        min_size: 最小规模(亿元)
+        
+    Returns:
+        包含ETF信息的DataFrame
     """
-    # ① 全市场股票
-    stocks = pro.stock_basic(exchange='', list_status='L',
-                             fields='ts_code,market')
-    if stocks.empty:
-        raise RuntimeError("Tushare 返回空数据，请检查 TOKEN 或网络")
+    try:
+        # 获取ETF基础信息
+        etf_basic = pro.fund_basic(market='E')  # E表示ETF
+        
+        if etf_basic.empty:
+            raise RuntimeError("Tushare 返回空ETF数据，请检查 TOKEN 或网络")
+        
+        # 获取ETF基本信息和规模数据
+        etf_list = []
+        for _, etf in etf_basic.iterrows():
+            code = etf['ts_code']
+            name = etf['name']
+            
+            # 跳过货币ETF和债券ETF（如果只要主要ETF）
+            if etf_type == 'main':
+                if any(keyword in name for keyword in ['货币', '债券', '可转债', '国债']):
+                    continue
+            
+            etf_list.append({
+                'ts_code': code,
+                'name': name,
+                'target_type': 'ETF',
+                'category': '股票ETF' if '股票' in name or any(idx in name for idx in ['300', '500', '50', '创业板', '科创']) else '其他ETF'
+            })
+        
+        etf_df = pd.DataFrame(etf_list)
+        
+        # 按规模过滤（这里简化处理，实际可以调用nav接口获取规模）
+        logger.info(f"获取到 {len(etf_df)} 只ETF")
+        
+        return etf_df
+        
+    except Exception as e:
+        logger.error(f"获取ETF列表失败: {e}")
+        return pd.DataFrame()
 
-    # ② 市场过滤（如 '主板'、'创业板'、'科创板'）
-    if market:
-        stocks = stocks[stocks['market'] == market]
-
-    # ③ 指数成分过滤（如 '000300.SH'）
-    if index_code:
-        # 计算本月首日与末日
-        today = dt.date.today()
-        first_day = today.replace(day=1).strftime('%Y%m%d')
-        last_day = today.replace(
-            day=calendar.monthrange(today.year, today.month)[1]
-        ).strftime('%Y%m%d')
-
-        # 尝试本月区间
-        index_df = pro.index_weight(
-            index_code=index_code,
-            start_date=first_day,
-            end_date=last_day
-        )
-
-        # 若本月无数据，再回溯 2 个月（最多 3 次）
-        back_months = 1
-        while index_df.empty and back_months <= 2:
-            ref = today - dt.timedelta(days=30 * back_months)
-            first_day = ref.replace(day=1).strftime('%Y%m%d')
-            last_day = ref.replace(
-                day=calendar.monthrange(ref.year, ref.month)[1]
-            ).strftime('%Y%m%d')
-            index_df = pro.index_weight(
-                index_code=index_code,
-                start_date=first_day,
-                end_date=last_day
-            )
-            back_months += 1
-
-        if index_df.empty:
-            raise RuntimeError(
-                f"近 3 个月均未获取到 {index_code} 成分股数据，请检查指数代码或积分不足"
-            )
-
-        stocks = stocks[stocks['ts_code'].isin(index_df['con_code'])]
-
-    return stocks[['ts_code']].reset_index(drop=True)
-
-def update_universe(save_path=None, index_code=None, market=None):
+def get_index_list(index_type: str = 'main') -> pd.DataFrame:
     """
-    更新股票池文件
+    获取指数列表
+    
+    Args:
+        index_type: 指数类型，'main'(主要指数), 'all'(所有指数)
+        
+    Returns:
+        包含指数信息的DataFrame
+    """
+    try:
+        # 主要指数列表
+        main_indices = [
+            ('000001.SH', '上证指数'),
+            ('000300.SH', '沪深300'),
+            ('000905.SH', '中证500'),
+            ('000852.SH', '中证1000'),
+            ('399001.SZ', '深证成指'),
+            ('399006.SZ', '创业板指'),
+            ('000688.SH', '科创50'),
+            ('000016.SH', '上证50'),
+            ('932000.CSI', 'CSI国债指数'),
+        ]
+        
+        if index_type == 'main':
+            index_list = []
+            for code, name in main_indices:
+                index_list.append({
+                    'ts_code': code,
+                    'name': name,
+                    'target_type': 'INDEX',
+                    'category': '宽基指数' if any(idx in name for idx in ['沪深300', '中证500', '中证1000', '上证指数', '深证成指']) else '行业指数'
+                })
+            
+            return pd.DataFrame(index_list)
+        else:
+            # 获取所有指数（可以进一步实现）
+            logger.warning("暂不支持获取所有指数，返回主要指数")
+            return get_index_list('main')
+            
+    except Exception as e:
+        logger.error(f"获取指数列表失败: {e}")
+        return pd.DataFrame()
+
+def update_universe(save_path=None, target_type='etf', etf_type='main', min_size=1.0):
+    """
+    更新ETF/指数池文件
 
     参数:
         save_path: 保存路径，默认为config/universe.csv
-        index_code: 指数代码，如'000300.SH'为沪深300
-        market: 市场类型
+        target_type: 目标类型，'etf', 'index', 'both'
+        etf_type: ETF类型，'main'或'all'
+        min_size: 最小规模(亿元)
 
     返回:
-        更新后的股票列表DataFrame
+        更新后的标的列表DataFrame
     """
-    # 获取股票列表
-    stocks = get_stock_list(index_code, market)
+    all_targets = []
+    
+    # 获取ETF
+    if target_type in ['etf', 'both']:
+        etf_df = get_etf_list(etf_type, min_size)
+        if not etf_df.empty:
+            all_targets.append(etf_df)
+    
+    # 获取指数
+    if target_type in ['index', 'both']:
+        index_df = get_index_list('main')
+        if not index_df.empty:
+            all_targets.append(index_df)
+    
+    if not all_targets:
+        logger.warning("获取的标的池为空，请检查过滤条件")
+        return pd.DataFrame()
+    
+    # 合并所有标的
+    targets = pd.concat(all_targets, ignore_index=True)
 
-    if len(stocks) == 0:
-        logger.warning("获取的股票池为空，请检查过滤条件")
-        return stocks
+    if len(targets) == 0:
+        logger.warning("获取的标的池为空，请检查过滤条件")
+        return targets
 
     # 设置默认保存路径
     if save_path is None:
@@ -137,35 +189,40 @@ def update_universe(save_path=None, index_code=None, market=None):
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
     # 保存为csv
-    stocks.to_csv(save_path, index=False)
-    logger.info(f"✅ 股票池已更新，共{len(stocks)}只股票，已保存至{save_path}")
+    targets.to_csv(save_path, index=False)
+    logger.info(f"✅ 标的池已更新，共{len(targets)}个标的，已保存至{save_path}")
+    
+    # 打印统计信息
+    print(f"\n📊 标的池统计:")
+    print(f"总数量: {len(targets)}")
+    if 'target_type' in targets.columns:
+        print(targets['target_type'].value_counts().to_string())
+    if 'category' in targets.columns:
+        print(f"\n分类统计:")
+        print(targets['category'].value_counts().to_string())
 
-    return stocks
+    return targets
 
 if __name__ == "__main__":
     import argparse
 
     # 创建命令行参数解析器
-    parser = argparse.ArgumentParser(description='更新股票池')
-    parser.add_argument('--index_code', type=str, default='000300.SH',
-                        help='指数代码，如000300.SH为沪深300，000905.SH为中证500，设为None表示不使用指数过滤')
-    parser.add_argument('--market', type=str, default=None,
-                        help='市场类型，如"主板"、"创业板"、"科创板"等，默认为不过滤')
+    parser = argparse.ArgumentParser(description='更新ETF/指数池')
+    parser.add_argument('--target_type', type=str, default='etf', choices=['etf', 'index', 'both'],
+                        help='目标类型: etf(ETF), index(指数), both(两者)')
+    parser.add_argument('--etf_type', type=str, default='main', choices=['main', 'all'],
+                        help='ETF类型: main(主要ETF), all(所有ETF)')
+    parser.add_argument('--min_size', type=float, default=1.0,
+                        help='最小规模要求(亿元)，默认1.0')
     parser.add_argument('--output', type=str, default=None,
                         help='输出文件路径，默认为config/universe.csv')
 
     args = parser.parse_args()
 
-    # ---- 处理 "None" 字符串 ----
-    if isinstance(args.index_code, str) and args.index_code.lower() == 'none':
-        args.index_code = None
-
-    if isinstance(args.market, str) and args.market.lower() == 'none':
-        args.market = None
-
-    # 更新股票池
+    # 更新标的池
     update_universe(
         save_path=args.output,
-        index_code=args.index_code,
-        market=args.market
+        target_type=args.target_type,
+        etf_type=args.etf_type,
+        min_size=args.min_size
     )

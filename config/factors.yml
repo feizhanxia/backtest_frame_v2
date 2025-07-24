@@ -1,4 +1,4 @@
-# 因子计算与回测配置文件
+# ETF/指数因子计算与回测配置文件
 
 # 数据配置
 data:
@@ -14,7 +14,7 @@ paths:
   ic_output: "reports"
   fusion_output: "reports"
 
-# 因子配置
+# 因子配置 - 适用于ETF/指数
 factors:
   # 动量类因子
   mom20:
@@ -44,10 +44,17 @@ factors:
     window: 20
     description: "Amihud流动性因子"
     
-  # 估值因子
-  inv_pb:
-    enabled: false  # 缺失pb数据，暂时禁用
-    description: "PB倒数"
+  # 技术指标因子
+  macd_signal:
+    enabled: true
+    fast: 12
+    slow: 26
+    signal: 9
+    description: "MACD信号因子"
+    
+  # 删除财务类因子（ETF/指数不适用）
+  # inv_pb: 已删除
+  # roe: 已删除
     
   # 质量因子
   roe:

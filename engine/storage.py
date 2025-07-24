@@ -53,3 +53,16 @@ def save_raw_data(df: pd.DataFrame, base_dir: str, name: str, data_type: str):
     os.makedirs(dir_, exist_ok=True)
     path = f"{dir_}/{name}_{data_type}_{today}.parquet"
     pq.write_table(pa.Table.from_pandas(df), path)
+
+def save_processed_data(df: pd.DataFrame, base_dir: str, name: str):
+    """保存处理后的数据（等同于to_parquet_partition）
+    
+    Args:
+        df: 需要存储的处理后数据框
+        base_dir: 基础目录路径
+        name: 文件名（不含扩展名）
+        
+    Returns:
+        None
+    """
+    to_parquet_partition(df, base_dir, name)

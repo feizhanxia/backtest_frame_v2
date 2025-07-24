@@ -1,23 +1,28 @@
-# 🚀 量化因子分析框架 v2.0
+# 🚀 ETF/指数量化因子分析框架 v2.0
 
-这是一个模块化、高效、可扩展的量化因子分析和回测框架，支持多源数据接入、多因子计算、IC分析、因子融合及未来的回测验证。
+这是一个模块化、高效、可扩展的ETF/指数量化因子分析和回测框架，支持多源数据接入、多因子计算、IC分析、因子融合及未来的回测验证。
 
 ## 📋 项目概览
 
 ### 核心目标
-构建一个**模块化、高效、可扩展**的量化因子分析框架，支持：
-- 多源数据接入与标准化处理
-- 多类型因子计算与验证
+构建一个**模块化、高效、可扩展**的ETF/指数量化因子分析框架，支持：
+- ETF/指数数据接入与标准化处理
+- 技术类因子计算与验证
 - 因子有效性分析（IC分析）
 - 多因子融合策略
 - 回测验证与性能评估（待开发）
 
 ### 技术架构
-- **数据层**: Parquet存储 + 无前视偏差对齐
+- **数据层**: Parquet存储 + 日线数据对齐
 - **因子层**: 模块化因子计算引擎 + 标准化流程
 - **分析层**: IC分析引擎 + 多因子融合引擎
 - **回测层**: vectorbt集成（待开发）
 - **配置层**: YAML配置驱动 + 灵活参数管理
+
+### 目标改进
+- **标的类型**: 从个股分析转向ETF/指数分析
+- **因子类型**: 专注技术面分析，移除财务面因子
+- **分析维度**: 从横截面选股转向时序轮动/择时
 
 ### 设计原则
 - **模块化**: 引擎独立，职责单一
@@ -32,7 +37,7 @@
 backtest_frame_v2/
 ├── config/                     # 配置文件
 │   ├── factors.yml            # 因子配置（启用/参数）
-│   └── universe.csv           # 股票池配置
+│   └── universe.csv           # ETF/指数池配置
 ├── data/                      # 数据存储
 │   ├── raw/                   # 原始数据
 │   ├── processed/YYYY/        # Parquet分区数据
@@ -53,7 +58,7 @@ backtest_frame_v2/
 │   └── run_fusion.py         # 因子融合
 ├── scripts/                   # 工具脚本
 │   ├── build_data_warehouse.py  # 数据仓库构建
-│   └── update_universe.py       # 股票池更新
+│   └── update_universe.py       # ETF/指数池更新
 ├── reports/                   # 分析报告输出
 │   ├── factors/              # 因子数据
 │   ├── ic_summary.csv        # IC统计
@@ -76,15 +81,20 @@ pip install pandas numpy pyarrow tushare tqdm matplotlib pyyaml scikit-learn
 TUSHARE_TOKEN=your_token_here
 ```
 
-### 3. 股票池配置
-默认使用`config/universe.csv`中的股票池，可通过以下命令更新：
+### 3. ETF/指数池配置
+默认使用`config/universe.csv`中的ETF/指数池，可通过以下命令更新：
 ```bash
-# 获取沪深300成分股
+# 获取主要ETF（默认）
 python scripts/update_universe.py
 
-# 也可以自定义参数
-# 中证500成分股
-python scripts/update_universe.py --index_code 000905.SH
+# 获取所有ETF
+python scripts/update_universe.py --etf_type all
+
+# 获取指数
+python scripts/update_universe.py --target_type index
+
+# 获取ETF和指数
+python scripts/update_universe.py --target_type both
 ```
 
 ### 4. 因子配置
@@ -125,16 +135,17 @@ python run_pipeline.py test       # 运行测试流程
 ## 📊 核心功能
 
 ### 1. 数据处理
-- **无前视偏差**: 严格按照公布日期对齐财务数据
+- **多类型支持**: 支持ETF/指数/股票数据获取
 - **数据清洗**: 缺失值处理、去极值、标准化
 - **高效存储**: Parquet分区存储，增量更新，指纹检测
 
 ### 2. 因子计算
-当前支持的因子类型：
+当前支持的因子类型（专注技术面分析）：
 - **动量因子**: `mom20` (20日动量)
 - **反转因子**: `shortrev5` (5日短期反转)
 - **波动率因子**: `vol20` (20日波动率)
 - **流动性因子**: `turn_mean20` (20日换手率), `amihud20` (流动性)
+- **技术指标**: `macd_signal` (MACD信号)
 
 ### 3. IC分析
 - **相关性分析**: Spearman相关系数，前瞻收益率相关性
@@ -183,7 +194,7 @@ factors:
 ## 📈 当前状态与结果
 
 ### 数据规模
-- **股票数量**: 300只股票
+- **标的数量**: 6个主要ETF/指数
 - **时间范围**: 858个交易日（2022至今）
 
 ### 因子表现

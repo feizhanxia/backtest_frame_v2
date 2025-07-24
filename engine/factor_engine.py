@@ -122,42 +122,6 @@ class FactorEngine:
         return -illiq  # 取负值，大值表示流动性好
     
     # ========== 财务因子 ==========
-    
-    def pb_inverse(self, pb: pd.DataFrame) -> pd.DataFrame:
-        """估值因子：PB倒数
-        
-        Args:
-            pb: PB矩阵
-            
-        Returns:
-            PB倒数矩阵（值越高越便宜）
-        """
-        return 1 / pb.replace(0, np.nan)
-    
-    def roe_ttm(self, fin_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
-        """质量因子：ROE_TTM
-        
-        Args:
-            fin_data: 财务数据字典
-            
-        Returns:
-            ROE因子矩阵
-        """
-        return fin_data.get("roe_ttm", pd.DataFrame())
-    
-    # ========== 规模因子 ==========
-    
-    def size_mv(self, mv: pd.DataFrame) -> pd.DataFrame:
-        """规模因子：对数流通市值
-        
-        Args:
-            mv: 流通市值矩阵
-            
-        Returns:
-            规模因子矩阵（取负值，小市值溢价）
-        """
-        return -np.log(mv.replace(0, np.nan))
-    
     # ========== 数据预处理函数 ==========
     
     def winsorize(self, df: pd.DataFrame, quantiles: tuple = (0.01, 0.99)) -> pd.DataFrame:
@@ -256,13 +220,13 @@ class FactorEngine:
         return result
     
     def compute_factor(self, factor_name: str, price_data: Dict[str, pd.DataFrame], 
-                      fin_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
-        """计算单个因子
+                      fin_data: Dict[str, pd.DataFrame] = None) -> pd.DataFrame:
+        """计算单个因子 (适配ETF/指数，不再需要财务数据)
         
         Args:
             factor_name: 因子名称
             price_data: 价格数据字典
-            fin_data: 财务数据字典
+            fin_data: 财务数据字典 (ETF/指数不使用，保留兼容性)
             
         Returns:
             因子矩阵 DataFrame(index=date, columns=ts_code)
@@ -272,7 +236,7 @@ class FactorEngine:
             return pd.DataFrame()
         
         try:
-            # 根据因子名称调用对应的计算函数
+            # 根据因子名称调用对应的计算函数 - 只保留技术类因子
             if factor_name == 'mom20':
                 window = factor_config.get('window', 20)
                 factor_raw = self.mom_20(price_data['close'], window)
@@ -285,7 +249,7 @@ class FactorEngine:
                 window = factor_config.get('window', 20)
                 factor_raw = self.volatility_20(price_data['close'], window)
                 
-            elif factor_name == 'macd':
+            elif factor_name == 'macd_signal':
                 fast = factor_config.get('fast', 12)
                 slow = factor_config.get('slow', 26)
                 signal = factor_config.get('signal', 9)
@@ -303,14 +267,10 @@ class FactorEngine:
                     price_data['close'], price_data['amount'], window
                 )
                 
-            elif factor_name == 'inv_pb':
-                factor_raw = self.pb_inverse(fin_data['pb'])
-                
-            elif factor_name == 'roe':
-                factor_raw = self.roe_ttm(fin_data)
-                
-            elif factor_name == 'size':
-                factor_raw = self.size_mv(price_data['mv'])
+            # 删除财务相关因子:
+            # elif factor_name == 'inv_pb': (已删除)
+            # elif factor_name == 'roe': (已删除)
+            # elif factor_name == 'size': (已删除)
                 
             else:
                 print(f"未知因子: {factor_name}")
@@ -327,12 +287,12 @@ class FactorEngine:
             return pd.DataFrame()
     
     def compute_all_factors(self, price_data: Dict[str, pd.DataFrame], 
-                           fin_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
-        """计算所有启用的因子
+                           fin_data: Dict[str, pd.DataFrame] = None) -> pd.DataFrame:
+        """计算所有启用的因子 (适配ETF/指数，财务数据可选)
         
         Args:
             price_data: 价格数据字典
-            fin_data: 财务数据字典
+            fin_data: 财务数据字典 (ETF/指数不使用，保留兼容性)
             
         Returns:
             所有因子的MultiIndex DataFrame (factor, ts_code)
