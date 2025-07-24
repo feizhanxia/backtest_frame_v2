@@ -88,7 +88,7 @@ preprocessing:
 # IC分析配置
 ic:
   window: 60
-  min_samples: 30
+  min_samples: 3  # 改为3个样本，适应6个标的的情况
   forward_return_days: 1
   correlation_method: "spearman"
   

@@ -9,14 +9,18 @@ import os
 # 将项目根目录添加到 Python 路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from engine import data_fetcher as F, aligner as A, cleaner as C, storage as S
+from engine import data_fetcher as F, cleaner as C, storage as S
+
+# 确保logs目录存在
+logs_dir = Path(__file__).resolve().parents[1] / "logs"
+logs_dir.mkdir(exist_ok=True)
 
 # 设置日志
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("data_build.log"),
+        logging.FileHandler(logs_dir / "data_build.log"),
         logging.StreamHandler()
     ]
 )
@@ -47,13 +51,10 @@ def process_target(code):
         # 清洗价格数据
         price = C.clean_price(price)
         
-        # ETF/指数不需要财务数据，直接进行数据对齐和存储
-        if not price.empty:
-            # 对齐数据（简化版，只处理价格数据）
-            aligned_data = A.align_data(price, None)  # 不传入财务数据
-            
+        # ETF/指数只需要价格数据，直接存储
+        if price is not None:
             # 存储processed数据
-            S.save_processed_data(aligned_data, BASE, code)
+            S.save_processed_data(price, BASE, code)
             
             logger.info(f"✅ {code} 数据处理完成")
             return True

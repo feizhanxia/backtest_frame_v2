@@ -172,7 +172,7 @@ def generate_fusion_report(fusion_results: dict):
                 
                 f.write(f"  数据形状: {result_df.shape}\n")
                 f.write(f"  时间范围: {result_df.index.min()} 至 {result_df.index.max()}\n")
-                f.write(f"  股票数量: {len(result_df.columns)}\n")
+                f.write(f"  标的数量: {len(result_df.columns)}\n")
                 f.write(f"  有效观测: {result_df.dropna().size} / {result_df.size}\n")
                 
                 # 基础统计

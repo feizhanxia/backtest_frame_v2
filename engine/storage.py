@@ -41,7 +41,7 @@ def save_raw_data(df: pd.DataFrame, base_dir: str, name: str, data_type: str):
     Args:
         df: 需要存储的原始数据框
         base_dir: 基础目录路径
-        name: 文件名前缀（通常是股票代码）
+        name: 文件名前缀（通常是标的代码）
         data_type: 数据类型（如'price', 'financial'等）
         
     Returns:

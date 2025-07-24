@@ -61,7 +61,7 @@ def main():
         reports_dir = PROJECT_ROOT / "reports"
         
         output_files = [
-            "factors/all_factors.csv",
+            "factors/all_factors.parquet",
             "ic_timeseries.csv", 
             "ic_summary.csv",
             "factor_ranking.csv",

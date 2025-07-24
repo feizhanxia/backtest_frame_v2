@@ -72,7 +72,7 @@ python run_pipeline.py fusion     # 仅因子融合
 # 检查数据文件
 ls -la data/processed/2025/
 
-# 检查股票池
+# 检查标的池
 cat config/universe.csv | wc -l
 
 # 检查因子配置

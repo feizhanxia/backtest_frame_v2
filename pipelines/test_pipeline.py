@@ -36,7 +36,7 @@ def main():
         # 2. 计算因子
         print("\n📌 步骤 2/6: 计算因子...")
         price_data = data_interface.get_price_data()
-        fin_data = {}  # 空的财务数据
+        fin_data = {}  # ETF/指数不需要财务数据
         
         # 获取启用的因子
         enabled_factors = [name for name, config in factor_engine.config['factors'].items() 

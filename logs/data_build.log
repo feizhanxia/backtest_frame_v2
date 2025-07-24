@@ -47,3 +47,12 @@
 2025-07-24 17:32:24,158 - etf_data_warehouse - WARNING - ⚠️ 159377.SZ 价格数据为空
 2025-07-24 17:32:27,118 - etf_data_warehouse - WARNING - ⚠️ 159216.SZ 价格数据为空
 2025-07-24 17:32:27,602 - etf_data_warehouse - WARNING - ⚠️ 159202.SZ 价格数据为空
+2025-07-24 18:01:39,783 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:01:39,785 - etf_data_warehouse - INFO - 标的池读取成功，共 6 个标的
+2025-07-24 18:01:41,567 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成
+2025-07-24 18:01:41,578 - etf_data_warehouse - INFO - ✅ 510050.SH 数据处理完成
+2025-07-24 18:01:41,595 - etf_data_warehouse - INFO - ✅ 510300.SH 数据处理完成
+2025-07-24 18:01:41,661 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成
+2025-07-24 18:01:42,239 - etf_data_warehouse - INFO - ✅ 510500.SH 数据处理完成
+2025-07-24 18:01:43,410 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成
+2025-07-24 18:01:43,411 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 6/6 只股票

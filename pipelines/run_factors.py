@@ -30,7 +30,7 @@ def main():
         factor_engine = FactorEngine()
         
         # 2. 加载基础数据
-        print("\n2. 加载价格和财务数据...")
+        print("\n2. 加载价格数据...")
         price_data = data_interface.get_price_data()
         
         # 检查价格数据状态
@@ -42,17 +42,15 @@ def main():
         close_data = price_data.get('close', pd.DataFrame())
         if not close_data.empty:
             print(f"   价格数据形状: {close_data.shape}")
-            print(f"   股票池大小: {len(close_data.columns)} 只股票")
+            print(f"   标的池大小: {len(close_data.columns)} 个标的")
         else:
             print("❌ 收盘价数据为空")
             return False
         
-        # 财务数据目前不可用，使用空字典
-        financial_data = {}
-        
         # 3. 计算所有因子
         print("\n3. 计算所有配置的因子...")
-        factors_df = factor_engine.compute_all_factors(price_data, financial_data)
+        # ETF/指数只需要价格数据，不需要财务数据
+        factors_df = factor_engine.compute_all_factors(price_data, {})
         
         if factors_df.empty:
             print("❌ 因子计算失败或无有效因子")
@@ -109,7 +107,7 @@ def generate_factor_report(factors_df: pd.DataFrame):
             f.write(f"生成时间: {pd.Timestamp.now()}\n")
             f.write(f"数据时间范围: {factors_df.index.min()} 至 {factors_df.index.max()}\n")
             f.write(f"因子数量: {len(factor_names)}\n")
-            f.write(f"股票数量: {len(factors_df.columns.get_level_values(1).unique())}\n")
+            f.write(f"标的数量: {len(factors_df.columns.get_level_values(1).unique())}\n")
             f.write(f"总观测值: {factors_df.size}\n")
             f.write(f"有效观测值: {factors_df.dropna().size}\n\n")
             

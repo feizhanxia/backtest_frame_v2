@@ -26,12 +26,16 @@ import calendar
 from dotenv import load_dotenv
 from pathlib import Path
 
+# 确保logs目录存在
+logs_dir = Path(__file__).resolve().parents[1] / "logs"
+logs_dir.mkdir(exist_ok=True)
+
 # 设置日志
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("universe_update.log"),
+        logging.FileHandler(logs_dir / "universe_update.log"),
         logging.StreamHandler()
     ]
 )
