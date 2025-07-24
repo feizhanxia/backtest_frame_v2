@@ -54,10 +54,7 @@ def process_target(code):
             logger.warning(f"⚠️ {code} 数据量不足（仅{len(price)}个交易日），跳过处理")
             return False
         
-        # 保存原始价格数据
-        S.save_raw_data(price, BASE, code, "price")
-        
-        # 清洗价格数据
+        # 清洗价格数据（移除停牌日等）
         price = C.clean_price(price)
         
         # ETF/指数只需要价格数据，直接存储

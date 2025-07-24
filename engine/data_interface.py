@@ -38,10 +38,10 @@ class DataInterface:
             df = pd.read_csv(universe_file)
             return df['ts_code'].tolist()
         else:
-            # 如果没有universe文件，从原始数据推断
-            raw_path = self.base_path / self.config['paths']['raw_data']
-            price_files = glob.glob(str(raw_path / "*_price_*.parquet"))
-            universe = [os.path.basename(f).split('_')[0] for f in price_files]
+            # 如果没有universe文件，从processed数据推断
+            processed_path = self.base_path / self.config['paths']['processed_data']
+            parquet_files = glob.glob(str(processed_path / "**/*.parquet"), recursive=True)
+            universe = [os.path.basename(f).replace('.parquet', '') for f in parquet_files]
             return sorted(list(set(universe)))
     
     def get_price_data(self, start_date: str = None, end_date: str = None) -> Dict[str, pd.DataFrame]:

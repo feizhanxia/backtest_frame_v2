@@ -8,7 +8,6 @@ data:
   
 # 数据路径
 paths:
-  raw_data: "data/raw"
   processed_data: "data/processed"
   factors_output: "reports/factors"
   ic_output: "reports"
