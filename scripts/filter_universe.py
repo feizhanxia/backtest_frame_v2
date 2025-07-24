@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 def filter_universe(target_type='both', etf_type='main', index_type='main', 
-                   min_list_days=365, output_file='universe_filtered.csv'):
+                    min_list_days=365, output_file='universe_small.csv'):
     """
     过滤标的池，只保留有足够历史数据的标的
     
@@ -108,7 +108,7 @@ def filter_universe(target_type='both', etf_type='main', index_type='main',
                     if index_type == 'main':
                         # 只保留主要指数
                         main_indices = ['000001.SH', '000300.SH', '000905.SH', '000852.SH', 
-                                      '399001.SZ', '399006.SZ', '000688.SH', '000016.SH', '932000.CSI']
+                                        '399001.SZ', '399006.SZ', '000688.SH', '000016.SH', '932000.CSI']
                         if ts_code not in main_indices:
                             failed_targets.append((ts_code, "非主要指数"))
                             continue
@@ -176,8 +176,8 @@ if __name__ == "__main__":
                         help='指数类型: main(主要指数), all(所有指数)')
     parser.add_argument('--min_list_days', type=int, default=365,
                         help='最小上市天数，默认365天')
-    parser.add_argument('--output', type=str, default='universe_filtered.csv',
-                        help='输出文件名，默认universe_filtered.csv')
+    parser.add_argument('--output', type=str, default='universe_small.csv',
+                        help='输出文件名，默认universe_small.csv')
 
     args = parser.parse_args()
 
