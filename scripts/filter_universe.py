@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
 过滤ETF/指数标的池
-只保留有历史数据且适合分析的标的
+从universe.csv中筛选有历史数据且适合分析的标的，支持各种过滤条件
 """
 
 import pandas as pd
 import tushare as ts
 import os
+import argparse
 from dotenv import load_dotenv
 from pathlib import Path
 import logging
@@ -19,14 +20,37 @@ pro = ts.pro_api(os.getenv("TUSHARE_TOKEN"))
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def filter_universe():
-    """过滤标的池，只保留有足够历史数据的标的"""
+def filter_universe(target_type='both', etf_type='main', index_type='main', 
+                   min_size=1.0, min_list_days=365, output_file='universe_filtered.csv'):
+    """
+    过滤标的池，只保留有足够历史数据的标的
+    
+    Args:
+        target_type: 目标类型，'etf', 'index', 'both'
+        etf_type: ETF类型，'main'(主要ETF), 'all'(所有ETF)
+        index_type: 指数类型，'main'(主要指数), 'all'(所有指数)
+        min_size: 最小规模(亿元)
+        min_list_days: 最小上市天数
+        output_file: 输出文件名
+    """
     
     # 读取完整标的池
     universe_file = Path(__file__).parent.parent / "config" / "universe.csv"
-    df = pd.read_csv(universe_file)
+    if not universe_file.exists():
+        logger.error(f"标的池文件不存在: {universe_file}")
+        return
     
+    df = pd.read_csv(universe_file)
     logger.info(f"原始标的池大小: {len(df)}")
+    
+    # 过滤目标类型
+    if target_type == 'etf':
+        df = df[df['target_type'] == 'ETF']
+    elif target_type == 'index':
+        df = df[df['target_type'] == '指数']
+    # 'both' 保留所有
+    
+    logger.info(f"按类型过滤后: {len(df)}")
     
     # 过滤条件
     valid_targets = []
@@ -39,11 +63,19 @@ def filter_universe():
         
         for idx, row in batch.iterrows():
             ts_code = row['ts_code']
-            target_type = row['target_type']
+            row_target_type = row['target_type']
             
             try:
-                # 获取基础信息
-                if target_type == 'ETF':
+                # 根据类型进行不同的检查
+                if row_target_type == 'ETF':
+                    # ETF过滤逻辑
+                    if etf_type == 'main':
+                        # 跳过货币ETF和债券ETF
+                        if any(keyword in row['name'] for keyword in ['货币', '债券', '可转债', '国债']):
+                            failed_targets.append((ts_code, "过滤掉货币/债券ETF"))
+                            continue
+                    
+                    # 获取基础信息
                     info = pro.fund_basic(ts_code=ts_code)
                     if info.empty:
                         failed_targets.append((ts_code, "无基础信息"))
@@ -52,30 +84,41 @@ def filter_universe():
                     list_date = info['list_date'].iloc[0]
                     delist_date = info['delist_date'].iloc[0]
                     
-                    # 过滤条件
-                    # 1. 上市时间早于2023年（确保有足够历史数据）
-                    if pd.notna(list_date) and int(list_date) > 20230101:
-                        failed_targets.append((ts_code, f"上市时间太晚: {list_date}"))
-                        continue
+                    # 检查上市时间
+                    if pd.notna(list_date):
+                        from datetime import datetime
+                        list_datetime = datetime.strptime(str(list_date), '%Y%m%d')
+                        days_since_list = (datetime.now() - list_datetime).days
+                        if days_since_list < min_list_days:
+                            failed_targets.append((ts_code, f"上市时间太短: {days_since_list}天"))
+                            continue
                     
-                    # 2. 未退市
+                    # 检查是否已退市
                     if pd.notna(delist_date):
                         failed_targets.append((ts_code, f"已退市: {delist_date}"))
                         continue
-                        
-                else:
-                    # 指数直接检查数据
-                    pass
-                
-                # 尝试获取少量数据验证可用性
-                if target_type == 'ETF':
+                    
+                    # 验证数据可用性
                     test_data = pro.fund_daily(ts_code=ts_code, start_date='20220101', end_date='20220201')
-                else:
-                    test_data = pro.index_daily(ts_code=ts_code, start_date='20220101', end_date='20220201')
+                    if test_data is None or test_data.empty:
+                        failed_targets.append((ts_code, "无历史数据"))
+                        continue
                 
-                if test_data is None or test_data.empty:
-                    failed_targets.append((ts_code, "无历史数据"))
-                    continue
+                else:
+                    # 指数过滤逻辑
+                    if index_type == 'main':
+                        # 只保留主要指数
+                        main_indices = ['000001.SH', '000300.SH', '000905.SH', '000852.SH', 
+                                      '399001.SZ', '399006.SZ', '000688.SH', '000016.SH', '932000.CSI']
+                        if ts_code not in main_indices:
+                            failed_targets.append((ts_code, "非主要指数"))
+                            continue
+                    
+                    # 验证指数数据可用性
+                    test_data = pro.index_daily(ts_code=ts_code, start_date='20220101', end_date='20220201')
+                    if test_data is None or test_data.empty:
+                        failed_targets.append((ts_code, "无历史数据"))
+                        continue
                 
                 # 通过所有检查，加入有效列表
                 valid_targets.append(row)
@@ -94,16 +137,16 @@ def filter_universe():
         filtered_df = pd.DataFrame(valid_targets)
         
         # 保存过滤后的标的池
-        filtered_file = universe_file.parent / "universe_filtered.csv"
-        filtered_df.to_csv(filtered_file, index=False)
+        output_path = Path(__file__).parent.parent / "config" / output_file
+        filtered_df.to_csv(output_path, index=False)
         
         logger.info(f"过滤后标的池大小: {len(filtered_df)}")
-        logger.info(f"过滤后标的池已保存至: {filtered_file}")
+        logger.info(f"过滤后标的池已保存至: {output_path}")
         
         # 保存失败记录
         if failed_targets:
             failed_df = pd.DataFrame(failed_targets, columns=['ts_code', 'reason'])
-            failed_file = universe_file.parent / "universe_failed.csv"
+            failed_file = output_path.parent / f"{output_file.replace('.csv', '_failed.csv')}"
             failed_df.to_csv(failed_file, index=False)
             logger.info(f"失败标的记录已保存至: {failed_file}")
         
@@ -125,4 +168,27 @@ def filter_universe():
         logger.error("没有找到任何有效标的！")
 
 if __name__ == "__main__":
-    filter_universe()
+    parser = argparse.ArgumentParser(description='过滤ETF/指数标的池')
+    parser.add_argument('--target_type', type=str, default='both', choices=['etf', 'index', 'both'],
+                        help='目标类型: etf(ETF), index(指数), both(两者)')
+    parser.add_argument('--etf_type', type=str, default='main', choices=['main', 'all'],
+                        help='ETF类型: main(主要ETF), all(所有ETF)')
+    parser.add_argument('--index_type', type=str, default='main', choices=['main', 'all'],
+                        help='指数类型: main(主要指数), all(所有指数)')
+    parser.add_argument('--min_size', type=float, default=1.0,
+                        help='最小规模要求(亿元)，默认1.0')
+    parser.add_argument('--min_list_days', type=int, default=365,
+                        help='最小上市天数，默认365天')
+    parser.add_argument('--output', type=str, default='universe_filtered.csv',
+                        help='输出文件名，默认universe_filtered.csv')
+
+    args = parser.parse_args()
+
+    filter_universe(
+        target_type=args.target_type,
+        etf_type=args.etf_type,
+        index_type=args.index_type,
+        min_size=args.min_size,
+        min_list_days=args.min_list_days,
+        output_file=args.output
+    )
