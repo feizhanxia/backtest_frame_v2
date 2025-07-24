@@ -27,22 +27,24 @@ logging.basicConfig(
 logger = logging.getLogger("etf_data_warehouse")
 
 # 配置参数
-START = "20220101"
+START = "20150101"
 BASE  = Path(__file__).resolve().parents[1]   # 项目根目录
 THREADS = 5  # 并行线程数
 
-def process_target(code):
+def process_target(code, force_refresh=False):
     """处理单个ETF/指数的数据获取和清洗流程
     
     Args:
         code: ETF/指数代码
+        force_refresh: 是否强制刷新数据
         
     Returns:
         成功处理返回True，否则返回False
     """
     try:
-        # 获取日线数据（自动识别资产类型）
-        price = F.fetch_daily(code, START, dt.date.today().strftime("%Y%m%d"))
+        # 获取日线数据（自动识别资产类型，带缓存检查）
+        price = F.fetch_daily_with_cache(code, START, dt.date.today().strftime("%Y%m%d"), 
+                                        base_dir=str(BASE), force_refresh=force_refresh)
         
         # 检查数据是否有效（至少要有一定的数据量）
         if price is None or price.empty:
@@ -79,6 +81,12 @@ def main():
     universe_file = "universe_small.csv"  # 使用小标的池
     # universe_file = "universe.csv"      # 使用完整标的池
     
+    # 检查是否需要强制刷新
+    import sys
+    force_refresh = "--force" in sys.argv or "-f" in sys.argv
+    if force_refresh:
+        logger.info("🔄 强制刷新模式：将重新下载所有数据")
+    
     try:
         codes = pd.read_csv(BASE/f"config/{universe_file}")["ts_code"].tolist()
         logger.info(f"标的池读取成功，共 {len(codes)} 个标的 (来源: {universe_file})")
@@ -86,11 +94,15 @@ def main():
         logger.error(f"读取标的池失败: {str(e)}")
         return
     
+    # 修改process_target函数调用，传递force_refresh参数
+    def process_target_with_cache(code):
+        return process_target(code, force_refresh)
+    
     # 并行处理各标的数据
     success_count = 0
     with concurrent.futures.ThreadPoolExecutor(max_workers=THREADS) as executor:
         # 提交所有任务
-        futures = {executor.submit(process_target, code): code for code in codes}
+        futures = {executor.submit(process_target_with_cache, code): code for code in codes}
         
         # 处理结果
         for future in tqdm(concurrent.futures.as_completed(futures), total=len(codes), ncols=80):

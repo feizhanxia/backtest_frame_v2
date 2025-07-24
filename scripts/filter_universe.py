@@ -21,15 +21,14 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 def filter_universe(target_type='both', etf_type='main', index_type='main', 
-                    min_list_days=365, output_file='universe_small.csv'):
+                    output_file='universe_small.csv'):
     """
-    过滤标的池，只保留有足够历史数据的标的
+    过滤标的池，基于名称和类型进行简单过滤（无需API调用）
     
     Args:
         target_type: 目标类型，'etf', 'index', 'both'
         etf_type: ETF类型，'main'(主要ETF), 'all'(所有ETF)
         index_type: 指数类型，'main'(主要指数), 'all'(所有指数)
-        min_list_days: 最小上市天数
         output_file: 输出文件名
     """
     
@@ -51,85 +50,46 @@ def filter_universe(target_type='both', etf_type='main', index_type='main',
     
     logger.info(f"按类型过滤后: {len(df)}")
     
-    # 过滤条件
+    # 简化过滤条件，只基于名称和代码进行过滤
     valid_targets = []
     failed_targets = []
     
-    # 分批处理，避免API限制
-    batch_size = 50
-    for i in tqdm(range(0, len(df), batch_size), desc="过滤标的池"):
-        batch = df.iloc[i:i+batch_size]
+    for idx, row in tqdm(df.iterrows(), total=len(df), desc="过滤标的池"):
+        ts_code = row['ts_code']
+        row_target_type = row['target_type']
+        name = row['name']
         
-        for idx, row in batch.iterrows():
-            ts_code = row['ts_code']
-            row_target_type = row['target_type']
+        try:
+            # 根据类型进行不同的检查
+            if row_target_type == 'ETF':
+                # ETF过滤逻辑
+                if etf_type == 'main':
+                    # 跳过货币ETF和债券ETF
+                    if any(keyword in name for keyword in ['货币', '债券', '可转债', '国债', '短债', '中债', '长债']):
+                        failed_targets.append((ts_code, "过滤掉货币/债券ETF"))
+                        continue
+                    
+                    # 跳过一些特殊类型的ETF
+                    if any(keyword in name for keyword in ['REITs', 'QDII', '商品', '黄金', '原油', '白银']):
+                        failed_targets.append((ts_code, "过滤掉特殊类型ETF"))
+                        continue
             
-            try:
-                # 根据类型进行不同的检查
-                if row_target_type == 'ETF':
-                    # ETF过滤逻辑
-                    if etf_type == 'main':
-                        # 跳过货币ETF和债券ETF
-                        if any(keyword in row['name'] for keyword in ['货币', '债券', '可转债', '国债']):
-                            failed_targets.append((ts_code, "过滤掉货币/债券ETF"))
-                            continue
-                    
-                    # 获取基础信息
-                    info = pro.fund_basic(ts_code=ts_code)
-                    if info.empty:
-                        failed_targets.append((ts_code, "无基础信息"))
+            else:
+                # 指数过滤逻辑
+                if index_type == 'main':
+                    # 只保留主要指数
+                    main_indices = ['000001.SH', '000300.SH', '000905.SH', '000852.SH', 
+                                    '399001.SZ', '399006.SZ', '000688.SH', '000016.SH', '932000.CSI']
+                    if ts_code not in main_indices:
+                        failed_targets.append((ts_code, "非主要指数"))
                         continue
-                        
-                    list_date = info['list_date'].iloc[0]
-                    delist_date = info['delist_date'].iloc[0]
-                    
-                    # 检查上市时间
-                    if pd.notna(list_date):
-                        from datetime import datetime
-                        list_datetime = datetime.strptime(str(list_date), '%Y%m%d')
-                        days_since_list = (datetime.now() - list_datetime).days
-                        if days_since_list < min_list_days:
-                            failed_targets.append((ts_code, f"上市时间太短: {days_since_list}天"))
-                            continue
-                    
-                    # 检查是否已退市
-                    if pd.notna(delist_date):
-                        failed_targets.append((ts_code, f"已退市: {delist_date}"))
-                        continue
-                    
-                    # 验证数据可用性
-                    test_data = pro.fund_daily(ts_code=ts_code, start_date='20220101', end_date='20220201')
-                    if test_data is None or test_data.empty:
-                        failed_targets.append((ts_code, "无历史数据"))
-                        continue
-                
-                else:
-                    # 指数过滤逻辑
-                    if index_type == 'main':
-                        # 只保留主要指数
-                        main_indices = ['000001.SH', '000300.SH', '000905.SH', '000852.SH', 
-                                        '399001.SZ', '399006.SZ', '000688.SH', '000016.SH', '932000.CSI']
-                        if ts_code not in main_indices:
-                            failed_targets.append((ts_code, "非主要指数"))
-                            continue
-                    
-                    # 验证指数数据可用性
-                    test_data = pro.index_daily(ts_code=ts_code, start_date='20220101', end_date='20220201')
-                    if test_data is None or test_data.empty:
-                        failed_targets.append((ts_code, "无历史数据"))
-                        continue
-                
-                # 通过所有检查，加入有效列表
-                valid_targets.append(row)
-                
-            except Exception as e:
-                failed_targets.append((ts_code, f"检查出错: {str(e)}"))
-                continue
-        
-        # 避免API限制，每批次后暂停
-        if i < len(df) - batch_size:
-            import time
-            time.sleep(1)
+            
+            # 通过所有检查，加入有效列表
+            valid_targets.append(row)
+            
+        except Exception as e:
+            failed_targets.append((ts_code, f"检查出错: {str(e)}"))
+            continue
     
     # 创建过滤后的标的池
     if valid_targets:
@@ -167,15 +127,13 @@ def filter_universe(target_type='both', etf_type='main', index_type='main',
         logger.error("没有找到任何有效标的！")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='过滤ETF/指数标的池')
+    parser = argparse.ArgumentParser(description='过滤ETF/指数标的池（简化版，无API调用）')
     parser.add_argument('--target_type', type=str, default='both', choices=['etf', 'index', 'both'],
                         help='目标类型: etf(ETF), index(指数), both(两者)')
     parser.add_argument('--etf_type', type=str, default='main', choices=['main', 'all'],
                         help='ETF类型: main(主要ETF), all(所有ETF)')
     parser.add_argument('--index_type', type=str, default='main', choices=['main', 'all'],
                         help='指数类型: main(主要指数), all(所有指数)')
-    parser.add_argument('--min_list_days', type=int, default=365,
-                        help='最小上市天数，默认365天')
     parser.add_argument('--output', type=str, default='universe_small.csv',
                         help='输出文件名，默认universe_small.csv')
 
@@ -185,6 +143,5 @@ if __name__ == "__main__":
         target_type=args.target_type,
         etf_type=args.etf_type,
         index_type=args.index_type,
-        min_list_days=args.min_list_days,
         output_file=args.output
     )

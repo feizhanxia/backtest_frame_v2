@@ -1,4 +1,7 @@
 import os, datetime as dt, warnings, tushare as ts, pandas as pd
+import pyarrow.parquet as pq
+import hashlib
+from pathlib import Path
 from dotenv import load_dotenv; load_dotenv()
 
 # 忽略来自pandas的FutureWarning
@@ -7,6 +10,115 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 warnings.filterwarnings("ignore", category=FutureWarning, module="tushare")
 
 pro = ts.pro_api(os.getenv("TUSHARE_TOKEN"))
+
+def _get_data_hash(ts_code: str, start: str, end: str) -> str:
+    """生成数据请求的哈希标识
+    
+    Args:
+        ts_code: 标的代码
+        start: 起始日期
+        end: 结束日期
+        
+    Returns:
+        数据请求的哈希字符串
+    """
+    request_str = f"{ts_code}_{start}_{end}"
+    return hashlib.md5(request_str.encode()).hexdigest()[:12]
+
+def _check_existing_data(ts_code: str, start: str, end: str, base_dir: str = None) -> pd.DataFrame:
+    """检查是否已有相同时间范围的数据
+    
+    Args:
+        ts_code: 标的代码
+        start: 起始日期，格式YYYYMMDD
+        end: 结束日期，格式YYYYMMDD
+        base_dir: 基础目录（可选）
+        
+    Returns:
+        如果存在且符合要求，返回现有数据；否则返回空DataFrame
+    """
+    if base_dir is None:
+        # 默认查找当前工作目录的processed数据
+        base_dir = Path.cwd()
+    
+    processed_path = Path(base_dir) / "data" / "processed" / f"{ts_code}.parquet"
+    
+    if not processed_path.exists():
+        return pd.DataFrame()
+    
+    try:
+        existing_df = pq.read_table(processed_path).to_pandas()
+        if existing_df.empty:
+            return pd.DataFrame()
+        
+        # 确保索引是datetime类型
+        if not isinstance(existing_df.index, pd.DatetimeIndex):
+            existing_df.index = pd.to_datetime(existing_df.index)
+        
+        # 转换请求的日期格式
+        start_date = pd.to_datetime(start, format='%Y%m%d')
+        end_date = pd.to_datetime(end, format='%Y%m%d')
+        
+        # 检查现有数据的时间范围
+        data_start = existing_df.index.min()
+        data_end = existing_df.index.max()
+        
+        # 检查数据覆盖情况：
+        # 1. 起始日期：现有数据开始日期应该接近或早于请求日期（允许几天差异，因为交易日历差异）
+        # 2. 结束日期：现有数据应该足够新（最多滞后1天）
+        
+        start_gap = (data_start - start_date).days
+        end_gap = (end_date - data_end).days
+        
+        # 起始日期检查：允许现有数据稍晚开始（因为交易日历），但不超过5天
+        start_ok = start_gap <= 5
+        # 结束日期检查：允许最多滞后1天
+        end_ok = end_gap <= 1
+        
+        if start_ok and end_ok:
+            # 过滤到有效数据范围
+            actual_start = max(start_date, data_start)
+            actual_end = min(end_date, data_end)  
+            mask = (existing_df.index >= actual_start) & (existing_df.index <= actual_end)
+            filtered_df = existing_df[mask]
+            
+            # 验证数据质量
+            if len(filtered_df) >= 100:  # 至少100个交易日
+                print(f"✅ {ts_code} 使用缓存数据 ({len(filtered_df)}天, {data_start.date()}~{data_end.date()})")
+                return filtered_df
+        
+        # 数据覆盖不足，需要更新
+        print(f"🔄 {ts_code} 需要更新数据 (现有: {data_start.date()}~{data_end.date()}, 请求: {start_date.date()}~{end_date.date()}, 开始差{start_gap}天, 结束差{end_gap}天)")
+        return pd.DataFrame()
+        
+    except Exception as e:
+        print(f"⚠️ 检查 {ts_code} 缓存时出错: {e}")
+        return pd.DataFrame()
+
+def fetch_daily_with_cache(ts_code: str, start: str, end: str, asset_type: str = 'auto', 
+                          base_dir: str = None, force_refresh: bool = False) -> pd.DataFrame:
+    """获取日线数据（带缓存检查）
+    
+    Args:
+        ts_code: 标的代码（如：000001.SZ, 510050.SH, 000300.SH）
+        start: 起始日期，格式YYYYMMDD
+        end: 结束日期，格式YYYYMMDD
+        asset_type: 资产类型，'stock'(股票), 'fund'(ETF), 'index'(指数), 'auto'(自动识别)
+        base_dir: 基础目录路径
+        force_refresh: 是否强制刷新数据
+        
+    Returns:
+        前复权后的日线数据，以trade_date为索引
+    """
+    # 如果不强制刷新，先检查现有数据
+    if not force_refresh:
+        existing_data = _check_existing_data(ts_code, start, end, base_dir)
+        if not existing_data.empty:
+            return existing_data
+    
+    # 没有缓存或需要刷新，调用原有的获取逻辑
+    print(f"🔄 {ts_code} 从API获取数据...")
+    return fetch_daily(ts_code, start, end, asset_type)
 
 def fetch_daily(ts_code: str, start: str, end: str, asset_type: str = 'auto') -> pd.DataFrame:
     """获取日线数据（股票/ETF/指数，已前复权）
@@ -40,6 +152,7 @@ def fetch_daily(ts_code: str, start: str, end: str, asset_type: str = 'auto') ->
                 # 备选：使用pro_bar接口
                 df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
                                adj='qfq', freq='D', asset='FD')
+            # !TODO: ETF数据需要获取复权因子来进行额外处理
         elif asset_type == 'index':
             # 指数使用index_daily接口
             df = pro.index_daily(ts_code=ts_code, start_date=start, end_date=end)
