@@ -48,8 +48,6 @@ python scripts/filter_universe.py --target_type index --index_type main --output
   - `main`: 主要指数（9个核心宽基指数）
   - `all`: 所有指数
 
-- `--min_size`: 最小规模要求（亿元），默认1.0
-
 - `--min_list_days`: 最小上市天数，默认365天
 
 - `--output`: 输出文件名，默认 `universe_filtered.csv`
