@@ -4,3 +4,5 @@
 2025-07-24 18:02:06,809 - universe_updater - INFO - 获取到 2202 只ETF
 2025-07-24 18:02:06,812 - universe_updater - INFO - ✅ 标的池已更新，共2202个标的，已保存至/Users/feizhanxia/Documents/Heyuan/量化1期/codes/backtest_frame_v2/config/universe.csv
 2025-07-24 18:19:39,166 - universe_updater - INFO - ✅ 标的池已更新，共9个标的，已保存至/Users/feizhanxia/Documents/Heyuan/量化1期/codes/backtest_frame_v2/config/universe.csv
+2025-07-24 18:32:53,015 - universe_updater - INFO - 获取到 2202 只ETF
+2025-07-24 18:32:53,019 - universe_updater - INFO - ✅ 标的池已更新，共2202个标的，已保存至/Users/feizhanxia/Documents/Heyuan/量化1期/codes/backtest_frame_v2/config/universe.csv

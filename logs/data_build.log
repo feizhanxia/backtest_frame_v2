@@ -104,3 +104,76 @@
 2025-07-24 18:27:10,811 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成
 2025-07-24 18:27:10,872 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成
 2025-07-24 18:27:10,873 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票
+2025-07-24 18:33:00,058 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:33:00,059 - etf_data_warehouse - INFO - 标的池读取成功，共 2202 个标的
+2025-07-24 18:33:06,618 - etf_data_warehouse - ERROR - ❌ 处理 159239.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:06,637 - etf_data_warehouse - ERROR - ❌ 处理 588130.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:06,661 - etf_data_warehouse - ERROR - ❌ 处理 563830.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:09,948 - etf_data_warehouse - ERROR - ❌ 处理 159226.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:11,519 - etf_data_warehouse - ERROR - ❌ 处理 159241.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:12,265 - etf_data_warehouse - ERROR - ❌ 处理 563770.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:12,303 - etf_data_warehouse - ERROR - ❌ 处理 159218.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:14,271 - etf_data_warehouse - ERROR - ❌ 处理 563550.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:15,656 - etf_data_warehouse - ERROR - ❌ 处理 563060.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:17,332 - etf_data_warehouse - ERROR - ❌ 处理 159229.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:18,021 - etf_data_warehouse - ERROR - ❌ 处理 159392.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:18,042 - etf_data_warehouse - ERROR - ❌ 处理 159227.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:20,250 - etf_data_warehouse - ERROR - ❌ 处理 563680.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:21,239 - etf_data_warehouse - ERROR - ❌ 处理 159236.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:23,516 - etf_data_warehouse - ERROR - ❌ 处理 563780.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:23,725 - etf_data_warehouse - ERROR - ❌ 处理 159221.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:26,970 - etf_data_warehouse - ERROR - ❌ 处理 159220.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:28,917 - etf_data_warehouse - ERROR - ❌ 处理 561870.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:29,088 - etf_data_warehouse - ERROR - ❌ 处理 159208.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:29,254 - etf_data_warehouse - ERROR - ❌ 处理 589980.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:30,499 - etf_data_warehouse - ERROR - ❌ 处理 508085.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:33,031 - etf_data_warehouse - ERROR - ❌ 处理 563900.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:34,482 - etf_data_warehouse - ERROR - ❌ 处理 159219.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:34,777 - etf_data_warehouse - ERROR - ❌ 处理 159235.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:35,801 - etf_data_warehouse - ERROR - ❌ 处理 159382.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:38,479 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:33:38,481 - etf_data_warehouse - INFO - 标的池读取成功，共 2202 个标的
+2025-07-24 18:33:42,810 - etf_data_warehouse - ERROR - ❌ 处理 159239.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:45,057 - etf_data_warehouse - ERROR - ❌ 处理 563830.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:45,235 - etf_data_warehouse - ERROR - ❌ 处理 159241.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:46,909 - etf_data_warehouse - ERROR - ❌ 处理 159218.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:46,965 - etf_data_warehouse - ERROR - ❌ 处理 159226.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:48,370 - etf_data_warehouse - ERROR - ❌ 处理 588130.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:49,079 - etf_data_warehouse - ERROR - ❌ 处理 563550.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:50,759 - etf_data_warehouse - ERROR - ❌ 处理 563770.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:51,083 - etf_data_warehouse - ERROR - ❌ 处理 159229.SZ 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:33:51,210 - etf_data_warehouse - ERROR - ❌ 处理 563060.SH 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:36:41,488 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:36:41,489 - etf_data_warehouse - INFO - 标的池读取成功，共 15 个标的 (来源: universe_small.csv)
+2025-07-24 18:36:43,196 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (861个交易日)
+2025-07-24 18:36:43,246 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (861个交易日)
+2025-07-24 18:36:44,844 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (861个交易日)
+2025-07-24 18:36:44,988 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (861个交易日)
+2025-07-24 18:36:46,315 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (861个交易日)
+2025-07-24 18:36:46,500 - etf_data_warehouse - WARNING - ⚠️ 000300.SH 无法获取到数据，可能是新上市或已退市
+2025-07-24 18:36:46,500 - etf_data_warehouse - WARNING - ⚠️ 000001.SH 无法获取到数据，可能是新上市或已退市
+2025-07-24 18:36:46,805 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (861个交易日)
+2025-07-24 18:36:47,936 - etf_data_warehouse - INFO - ✅ 510050.SH 数据处理完成 (861个交易日)
+2025-07-24 18:36:48,059 - etf_data_warehouse - INFO - ✅ 510300.SH 数据处理完成 (861个交易日)
+2025-07-24 18:36:48,072 - etf_data_warehouse - INFO - ✅ 510500.SH 数据处理完成 (861个交易日)
+2025-07-24 18:36:48,351 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (861个交易日)
+2025-07-24 18:36:49,696 - etf_data_warehouse - INFO - ✅ 512100.SH 数据处理完成 (860个交易日)
+2025-07-24 18:36:53,853 - etf_data_warehouse - WARNING - ⚠️ 159915.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-24 18:36:55,324 - etf_data_warehouse - WARNING - ⚠️ 159919.SZ 无法获取到数据，可能是新上市或已退市
+2025-07-24 18:36:55,326 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 11/15 只股票
+2025-07-24 18:37:22,527 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:37:22,528 - etf_data_warehouse - INFO - 标的池读取成功，共 13 个标的 (来源: universe_small.csv)
+2025-07-24 18:37:24,258 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:24,268 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:25,933 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成 (861个交易日)
+2025-07-24 18:37:25,955 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:25,992 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:26,141 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:26,146 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:27,602 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成 (861个交易日)
+2025-07-24 18:37:27,734 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成 (861个交易日)
+2025-07-24 18:37:27,737 - etf_data_warehouse - INFO - ✅ 510050.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:27,810 - etf_data_warehouse - INFO - ✅ 510300.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:27,813 - etf_data_warehouse - INFO - ✅ 510500.SH 数据处理完成 (861个交易日)
+2025-07-24 18:37:29,606 - etf_data_warehouse - INFO - ✅ 512100.SH 数据处理完成 (860个交易日)
+2025-07-24 18:37:29,608 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 13/13 只股票

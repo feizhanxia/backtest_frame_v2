@@ -28,7 +28,6 @@ logger = logging.getLogger("etf_data_warehouse")
 
 # 配置参数
 START = "20220101"
-START_Q = "20210101"
 BASE  = Path(__file__).resolve().parents[1]   # 项目根目录
 THREADS = 5  # 并行线程数
 
@@ -45,6 +44,16 @@ def process_target(code):
         # 获取日线数据（自动识别资产类型）
         price = F.fetch_daily(code, START, dt.date.today().strftime("%Y%m%d"))
         
+        # 检查数据是否有效（至少要有一定的数据量）
+        if price is None or price.empty:
+            logger.warning(f"⚠️ {code} 无法获取到数据，可能是新上市或已退市")
+            return False
+            
+        # 检查数据量是否足够（至少要有100个交易日的数据才有分析价值）
+        if len(price) < 100:
+            logger.warning(f"⚠️ {code} 数据量不足（仅{len(price)}个交易日），跳过处理")
+            return False
+        
         # 保存原始价格数据
         S.save_raw_data(price, BASE, code, "price")
         
@@ -52,14 +61,14 @@ def process_target(code):
         price = C.clean_price(price)
         
         # ETF/指数只需要价格数据，直接存储
-        if price is not None:
+        if price is not None and not price.empty:
             # 存储processed数据
             S.save_processed_data(price, BASE, code)
             
-            logger.info(f"✅ {code} 数据处理完成")
+            logger.info(f"✅ {code} 数据处理完成 ({len(price)}个交易日)")
             return True
         else:
-            logger.warning(f"⚠️ {code} 价格数据为空")
+            logger.warning(f"⚠️ {code} 清洗后数据为空")
             return False
             
     except Exception as e:
@@ -69,10 +78,13 @@ def process_target(code):
 def main():
     logger.info("开始构建ETF/指数数据仓库...")
     
-    # 读取标的池
+    # 读取标的池 - 可以选择使用小标的池进行测试
+    universe_file = "universe_small.csv"  # 使用小标的池
+    # universe_file = "universe.csv"      # 使用完整标的池
+    
     try:
-        codes = pd.read_csv(BASE/"config/universe.csv")["ts_code"].tolist()
-        logger.info(f"标的池读取成功，共 {len(codes)} 个标的")
+        codes = pd.read_csv(BASE/f"config/{universe_file}")["ts_code"].tolist()
+        logger.info(f"标的池读取成功，共 {len(codes)} 个标的 (来源: {universe_file})")
     except Exception as e:
         logger.error(f"读取标的池失败: {str(e)}")
         return
