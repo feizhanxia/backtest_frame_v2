@@ -25,8 +25,9 @@ def fetch_daily(ts_code: str, start: str, end: str, asset_type: str = 'auto') ->
         if asset_type == 'auto':
             if ts_code.startswith(('510', '511', '512', '513', '515', '516', '518')):
                 asset_type = 'fund'  # ETF
-            elif ts_code.startswith(('000', '399')) and ('SH' in ts_code or 'SZ' in ts_code):
-                # 指数（000300.SH, 399001.SZ等）
+            elif (ts_code.startswith(('000', '399')) and ('SH' in ts_code or 'SZ' in ts_code)) or \
+                 (ts_code.endswith('.CSI')):
+                # 指数（000300.SH, 399001.SZ, 932000.CSI等）
                 asset_type = 'index'
             else:
                 asset_type = 'stock'  # 默认为股票

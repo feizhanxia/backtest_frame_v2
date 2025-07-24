@@ -56,3 +56,51 @@
 2025-07-24 18:01:42,239 - etf_data_warehouse - INFO - ✅ 510500.SH 数据处理完成
 2025-07-24 18:01:43,410 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成
 2025-07-24 18:01:43,411 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 6/6 只股票
+2025-07-24 18:19:52,255 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:19:52,256 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的
+2025-07-24 18:19:54,397 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成
+2025-07-24 18:19:54,399 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成
+2025-07-24 18:19:54,399 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成
+2025-07-24 18:19:54,443 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成
+2025-07-24 18:19:54,465 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成
+2025-07-24 18:19:56,273 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成
+2025-07-24 18:19:56,276 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成
+2025-07-24 18:19:56,333 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成
+2025-07-24 18:20:01,230 - etf_data_warehouse - ERROR - ❌ 处理 932000.CSI 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:20:01,231 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 8/9 只股票
+2025-07-24 18:20:17,783 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:20:17,784 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的
+2025-07-24 18:20:19,608 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成
+2025-07-24 18:20:19,739 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成
+2025-07-24 18:20:19,789 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成
+2025-07-24 18:20:19,803 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成
+2025-07-24 18:20:20,248 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成
+2025-07-24 18:20:21,387 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成
+2025-07-24 18:20:21,751 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成
+2025-07-24 18:20:21,929 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成
+2025-07-24 18:20:27,331 - etf_data_warehouse - ERROR - ❌ 处理 932000.CSI 时出错: index -1 is out of bounds for axis 0 with size 0
+2025-07-24 18:20:27,331 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 8/9 只股票
+2025-07-24 18:26:55,265 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:26:55,266 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的
+2025-07-24 18:26:57,081 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成
+2025-07-24 18:26:57,082 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成
+2025-07-24 18:26:57,091 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成
+2025-07-24 18:26:57,189 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成
+2025-07-24 18:26:57,208 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成
+2025-07-24 18:26:58,968 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成
+2025-07-24 18:26:58,970 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成
+2025-07-24 18:26:58,972 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成
+2025-07-24 18:26:59,228 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成
+2025-07-24 18:26:59,229 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票
+2025-07-24 18:27:06,972 - etf_data_warehouse - INFO - 开始构建ETF/指数数据仓库...
+2025-07-24 18:27:06,973 - etf_data_warehouse - INFO - 标的池读取成功，共 9 个标的
+2025-07-24 18:27:08,838 - etf_data_warehouse - INFO - ✅ 000905.SH 数据处理完成
+2025-07-24 18:27:08,840 - etf_data_warehouse - INFO - ✅ 000300.SH 数据处理完成
+2025-07-24 18:27:08,899 - etf_data_warehouse - INFO - ✅ 399001.SZ 数据处理完成
+2025-07-24 18:27:08,899 - etf_data_warehouse - INFO - ✅ 000001.SH 数据处理完成
+2025-07-24 18:27:08,935 - etf_data_warehouse - INFO - ✅ 000852.SH 数据处理完成
+2025-07-24 18:27:10,587 - etf_data_warehouse - INFO - ✅ 000016.SH 数据处理完成
+2025-07-24 18:27:10,658 - etf_data_warehouse - INFO - ✅ 000688.SH 数据处理完成
+2025-07-24 18:27:10,811 - etf_data_warehouse - INFO - ✅ 399006.SZ 数据处理完成
+2025-07-24 18:27:10,872 - etf_data_warehouse - INFO - ✅ 932000.CSI 数据处理完成
+2025-07-24 18:27:10,873 - etf_data_warehouse - INFO - ✅ 数据仓刷新完成，成功处理 9/9 只股票
