@@ -73,15 +73,34 @@ class ICEngine:
                 factor_clean = factor_values[mask]
                 ret_clean = ret_values[mask]
                 
-                # 计算相关系数
-                if method.lower() == 'spearman':
-                    ic_value, _ = spearmanr(factor_clean, ret_clean)
-                elif method.lower() == 'pearson':
-                    ic_value, _ = pearsonr(factor_clean, ret_clean)
-                else:
-                    raise ValueError(f"不支持的相关性方法: {method}")
+                # 检查是否为常数数组（避免警告）
+                factor_unique = len(np.unique(factor_clean))
+                ret_unique = len(np.unique(ret_clean))
                 
-                ic_list.append(ic_value)
+                if factor_unique <= 1 or ret_unique <= 1:
+                    # 可选：输出调试信息
+                    if self.ic_config.get('debug_constant_arrays', False):
+                        if factor_unique <= 1:
+                            self._log_progress(f"日期 {date}: 因子值为常数 (unique values: {factor_unique})")
+                        if ret_unique <= 1:
+                            self._log_progress(f"日期 {date}: 收益率为常数 (unique values: {ret_unique})")
+                    
+                    ic_list.append(np.nan)
+                    continue
+                
+                # 计算相关系数
+                try:
+                    if method.lower() == 'spearman':
+                        ic_value, _ = spearmanr(factor_clean, ret_clean)
+                    elif method.lower() == 'pearson':
+                        ic_value, _ = pearsonr(factor_clean, ret_clean)
+                    else:
+                        raise ValueError(f"不支持的相关性方法: {method}")
+                        
+                    ic_list.append(ic_value)
+                except:
+                    # 处理任何其他计算异常
+                    ic_list.append(np.nan)
                 
             except Exception as e:
                 print(f"计算日期 {date} 的IC时出错: {e}")

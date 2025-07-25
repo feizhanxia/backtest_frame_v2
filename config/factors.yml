@@ -2,7 +2,7 @@
 
 # 数据配置
 data:
-  start_date: "20230101"
+  start_date: "20210101"
   end_date: "20250722"
   universe_file: "config/universe_local.csv"  # 原始universe文件，系统将自动筛选高质量标的
   
@@ -50,6 +50,431 @@ factors:
     slow: 26
     signal: 9
     description: "MACD信号因子"
+    
+  # ========== Talib 技术指标因子库 ==========
+  
+  # RSI 相对强弱指标
+  rsi14:
+    enabled: true
+    window: 14
+    description: "RSI相对强弱指标 (14日)"
+    
+  # MACD 柱状图
+  macd_histogram:
+    enabled: true
+    fast: 12
+    slow: 26
+    signal: 9
+    description: "MACD柱状图因子"
+    
+  # 布林带位置
+  bollinger_position:
+    enabled: true
+    window: 20
+    std_dev: 2.0
+    description: "布林带位置因子 (价格在布林带中的相对位置)"
+    
+  # 威廉指标
+  williams_r:
+    enabled: true
+    window: 14
+    description: "威廉指标 Williams %R"
+    
+  # 随机指标 K 值
+  stoch_k:
+    enabled: true
+    k_period: 14
+    d_period: 3
+    smooth_k: 3
+    description: "随机指标 KD 中的 K 值"
+    
+  # 商品通道指标
+  cci14:
+    enabled: true
+    window: 14
+    description: "商品通道指标 CCI (14日)"
+    
+  # 平均趋向指标
+  adx14:
+    enabled: true
+    window: 14
+    description: "平均趋向指标 ADX (14日)"
+    
+  # 能量潮指标
+  obv_signal:
+    enabled: true
+    window: 20
+    description: "能量潮指标 OBV 标准化信号"
+    
+  # ========== TA-Lib 重叠研究指标 (Overlap Studies) ==========
+  
+  # 简单移动平均线
+  sma20:
+    enabled: true
+    window: 20
+    description: "简单移动平均线 SMA (20日)"
+    
+  # 指数移动平均线
+  ema20:
+    enabled: true
+    window: 20
+    description: "指数移动平均线 EMA (20日)"
+    
+  # 三重指数移动平均线
+  tema20:
+    enabled: true
+    window: 20
+    description: "三重指数移动平均线 TEMA (20日)"
+    
+  # Kaufman自适应移动平均线
+  kama20:
+    enabled: true
+    window: 20
+    description: "Kaufman自适应移动平均线 KAMA (20日)"
+    
+  # 抛物线SAR
+  sar:
+    enabled: true
+    acceleration: 0.02
+    maximum: 0.2
+    description: "抛物线SAR停损转向指标"
+    
+  # ========== TA-Lib 动量指标 (Momentum Indicators) ==========
+  
+  # 绝对价格振荡器
+  apo_12_26:
+    enabled: true
+    fast: 12
+    slow: 26
+    description: "绝对价格振荡器 APO"
+    
+  # Aroon指标
+  aroon14:
+    enabled: true
+    window: 14
+    description: "Aroon指标 (14日)"
+    
+  # Aroon振荡器
+  aroonosc14:
+    enabled: true
+    window: 14
+    description: "Aroon振荡器 (14日)"
+    
+  # 力量平衡指标
+  bop:
+    enabled: true
+    description: "力量平衡指标 BOP"
+    
+  # Chande动量振荡器
+  cmo14:
+    enabled: true
+    window: 14
+    description: "Chande动量振荡器 CMO (14日)"
+    
+  # 方向性运动指标
+  dx14:
+    enabled: true
+    window: 14
+    description: "方向性运动指标 DX (14日)"
+    
+  # 资金流量指标
+  mfi14:
+    enabled: true
+    window: 14
+    description: "资金流量指标 MFI (14日)"
+    
+  # 动量指标
+  mom10:
+    enabled: true
+    window: 10
+    description: "动量指标 MOM (10日)"
+    
+  # 价格振荡器百分比
+  ppo_12_26:
+    enabled: true
+    fast: 12
+    slow: 26
+    description: "价格振荡器百分比 PPO"
+    
+  # 变化率
+  roc10:
+    enabled: true
+    window: 10
+    description: "变化率 ROC (10日)"
+    
+  # 快速随机指标
+  stochf14:
+    enabled: true
+    k_period: 14
+    d_period: 3
+    description: "快速随机指标 STOCHF"
+    
+  # TRIX指标
+  trix14:
+    enabled: true
+    window: 14
+    description: "TRIX指标 (14日)"
+    
+  # 终极振荡器
+  ultosc:
+    enabled: true
+    period1: 7
+    period2: 14
+    period3: 28
+    description: "终极振荡器 ULTOSC"
+    
+  # ========== TA-Lib 成交量指标 (Volume Indicators) ==========
+  
+  # 累积/派发线
+  ad_line:
+    enabled: true
+    description: "累积/派发线 A/D Line"
+    
+  # 累积/派发振荡器
+  adosc:
+    enabled: true
+    fast: 3
+    slow: 10
+    description: "累积/派发振荡器 ADOSC"
+    
+  # ========== TA-Lib 波动率指标 (Volatility Indicators) ==========
+  
+  # 平均真实波幅
+  atr14:
+    enabled: true
+    window: 14
+    description: "平均真实波幅 ATR (14日)"
+    
+  # 标准化平均真实波幅
+  natr14:
+    enabled: true
+    window: 14
+    description: "标准化平均真实波幅 NATR (14日)"
+    
+  # 真实波幅
+  trange:
+    enabled: true
+    description: "真实波幅 TRANGE"
+    
+  # ========== TA-Lib 价格变换指标 (Price Transform) ==========
+  
+  # 平均价格
+  avgprice:
+    enabled: true
+    description: "平均价格 AVGPRICE"
+    
+  # 中位价格
+  medprice:
+    enabled: true
+    description: "中位价格 MEDPRICE"
+    
+  # 典型价格
+  typprice:
+    enabled: true
+    description: "典型价格 TYPPRICE"
+    
+  # 加权收盘价格
+  wclprice:
+    enabled: true
+    description: "加权收盘价格 WCLPRICE"
+    
+  # ========== TA-Lib 统计函数 (Statistic Functions) ==========
+  
+  # Beta系数
+  beta5:
+    enabled: true
+    window: 5
+    description: "Beta系数 (5日)"
+    
+  # 皮尔逊相关系数
+  correl5:
+    enabled: true
+    window: 5
+    description: "皮尔逊相关系数 (5日)"
+    
+  # 线性回归
+  linearreg14:
+    enabled: true
+    window: 14
+    description: "线性回归 (14日)"
+    
+  # 标准差
+  stddev20:
+    enabled: true
+    window: 20
+    description: "标准差 (20日)"
+    
+  # 时间序列预测
+  tsf14:
+    enabled: true
+    window: 14
+    description: "时间序列预测 (14日)"
+    
+  # 方差
+  var20:
+    enabled: true
+    window: 20
+    description: "方差 (20日)"
+    
+  # ========== 新增的重叠研究指标 ==========
+  
+  # 双指数移动平均线
+  dema20:
+    enabled: true
+    window: 20
+    description: "双指数移动平均线 DEMA (20日)"
+    
+  # 加权移动平均线
+  wma20:
+    enabled: true
+    window: 20
+    description: "加权移动平均线 WMA (20日)"
+    
+  # 三角移动平均线
+  trima20:
+    enabled: true
+    window: 20
+    description: "三角移动平均线 TRIMA (20日)"
+    
+  # 三重指数移动平均线T3
+  t3_20:
+    enabled: true
+    window: 20
+    vfactor: 0.7
+    description: "三重指数移动平均线 T3 (20日)"
+    
+  # 中点
+  midpoint14:
+    enabled: true
+    window: 14
+    description: "中点 MIDPOINT (14日)"
+    
+  # 中点价格
+  midprice14:
+    enabled: true
+    window: 14
+    description: "中点价格 MIDPRICE (14日)"
+    
+  # 希尔伯特变换趋势线
+  ht_trendline:
+    enabled: true
+    description: "希尔伯特变换趋势线 HT_TRENDLINE"
+    
+  # ========== 新增的动量指标 ==========
+  
+  # ADX评级
+  adxr14:
+    enabled: true
+    window: 14
+    description: "ADX评级 ADXR (14日)"
+    
+  # 可控MA类型的MACD
+  macdext_12_26_9:
+    enabled: true
+    fast: 12
+    slow: 26
+    signal: 9
+    description: "可控MA类型的MACD MACDEXT"
+    
+  # MACD固定12/26
+  macdfix9:
+    enabled: true
+    signal: 9
+    description: "MACD固定12/26 MACDFIX"
+    
+  # 负向指标
+  minus_di14:
+    enabled: true
+    window: 14
+    description: "负向指标 MINUS_DI (14日)"
+    
+  # 负向运动
+  minus_dm14:
+    enabled: true
+    window: 14
+    description: "负向运动 MINUS_DM (14日)"
+    
+  # 正向指标
+  plus_di14:
+    enabled: true
+    window: 14
+    description: "正向指标 PLUS_DI (14日)"
+    
+  # 正向运动
+  plus_dm14:
+    enabled: true
+    window: 14
+    description: "正向运动 PLUS_DM (14日)"
+    
+  # 变化率百分比
+  rocp10:
+    enabled: true
+    window: 10
+    description: "变化率百分比 ROCP (10日)"
+    
+  # 变化率比率
+  rocr10:
+    enabled: true
+    window: 10
+    description: "变化率比率 ROCR (10日)"
+    
+  # 变化率比率100倍
+  rocr100_10:
+    enabled: true
+    window: 10
+    description: "变化率比率100倍 ROCR100 (10日)"
+    
+  # 随机RSI
+  stochrsi14:
+    enabled: true
+    window: 14
+    fastk: 5
+    fastd: 3
+    description: "随机RSI STOCHRSI (14日)"
+    
+  # ========== 新增的成交量指标 ==========
+  
+  # 净成交量指标
+  obv_line:
+    enabled: true
+    description: "净成交量指标 OBV"
+    
+  # ========== 新增的周期指标 (全新类别) ==========
+  
+  # 希尔伯特变换 - 主导周期
+  ht_dcperiod:
+    enabled: true
+    description: "希尔伯特变换主导周期 HT_DCPERIOD"
+    
+  # 希尔伯特变换 - 主导周期相位
+  ht_dcphase:
+    enabled: true
+    description: "希尔伯特变换主导周期相位 HT_DCPHASE"
+    
+  # 希尔伯特变换 - 相位分量(同相)
+  ht_phasor_inphase:
+    enabled: true
+    description: "希尔伯特变换相位分量同相 HT_PHASOR_INPHASE"
+    
+  # 希尔伯特变换 - 相位分量(正交)
+  ht_phasor_quadrature:
+    enabled: true
+    description: "希尔伯特变换相位分量正交 HT_PHASOR_QUADRATURE"
+    
+  # 希尔伯特变换 - 正弦波
+  ht_sine:
+    enabled: true
+    description: "希尔伯特变换正弦波 HT_SINE"
+    
+  # 希尔伯特变换 - 领先正弦波
+  ht_leadsine:
+    enabled: true
+    description: "希尔伯特变换领先正弦波 HT_LEADSINE"
+    
+  # 希尔伯特变换 - 趋势vs周期模式
+  ht_trendmode:
+    enabled: true
+    description: "希尔伯特变换趋势vs周期模式 HT_TRENDMODE"
     
 
 
