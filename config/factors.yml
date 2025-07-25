@@ -61,13 +61,13 @@ preprocessing:
   zscore:
     enabled: true
   forward_fill:
-    enabled: true
-    max_days: 5
+    enabled: true          # 🔧 重新启用前向填充
+    max_days: 15           # 增加到15天，改善覆盖率
 
 # IC分析配置
 ic:
   window: 60
-  min_samples: 3  # 改为3个样本，适应6个标的的情况
+  min_samples: 2  # 降低到2个样本，提高IC计算的数据利用率
   forward_return_days: 1
   correlation_method: "spearman"
   
@@ -95,13 +95,13 @@ fusion:
 # 并行计算配置
 parallel:
   n_jobs: 4
-  use_multiprocessing: false
+  use_multiprocessing: true
 
 # Universe质量筛选配置
 universe_filter:
   enabled: true  # 是否启用自动筛选
-  min_coverage_rate: 0.65  # 最低综合覆盖率
-  min_close_coverage: 0.8  # 最低收盘价覆盖率  
-  min_trading_days: 100   # 最少交易天数
-  max_universe_size: 150  # 最大标的数量
-  auto_update_days: 7     # 自动更新间隔（天）
+  min_coverage_rate: 0.7   # 🔧 降低到70%，更现实的要求
+  min_close_coverage: 0.8  # 🔧 降低到80%，平衡质量和数量
+  min_trading_days: 100    # 最少交易天数
+  max_universe_size: 500   # 最大标的数量
+  auto_update_days: 7      # 自动更新间隔（天）

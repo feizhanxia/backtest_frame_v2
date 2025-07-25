@@ -58,7 +58,7 @@ def main():
         
         # 4. 获取前瞻收益率（用于LightGBM融合）
         print("\n4. 加载前瞻收益率数据...")
-        ret_df = data_interface.get_forward_returns()
+        ret_df = data_interface.get_forward_returns()  # 现在会自动读取配置中的forward_return_days
         
         if ret_df.empty:
             print("⚠️  无前瞻收益率数据，将跳过LightGBM融合")

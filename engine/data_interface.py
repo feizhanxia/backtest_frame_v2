@@ -215,17 +215,20 @@ class DataInterface:
         
         return price_data
     
-    def get_forward_returns(self, days: int = 1, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def get_forward_returns(self, days: int = None, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """获取前瞻收益率
         
         Args:
-            days: 前瞻天数
+            days: 前瞻天数，None时从配置文件读取
             start_date: 开始日期
             end_date: 结束日期
             
         Returns:
             前瞻收益率矩阵 DataFrame(index=date, columns=ts_code)
         """
+        # 从配置文件读取前瞻天数
+        if days is None:
+            days = self.config.get('ic', {}).get('forward_return_days', 1)
         price_data = self.get_price_data(start_date, end_date)
         close = price_data['close']
         

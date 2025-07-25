@@ -43,7 +43,7 @@ def main():
         
         # 3. 获取前瞻收益率
         print("\n3. 计算前瞻收益率...")
-        ret_df = data_interface.get_forward_returns()
+        ret_df = data_interface.get_forward_returns()  # 现在会自动读取配置中的forward_return_days
         
         if ret_df.empty:
             print("❌ 无法计算前瞻收益率")

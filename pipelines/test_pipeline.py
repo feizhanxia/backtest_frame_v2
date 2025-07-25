@@ -59,7 +59,7 @@ def main():
         
         # 3. 计算IC分析
         print("\n📌 步骤 3/6: IC分析...")
-        forward_returns = data_interface.get_forward_returns(days=1)
+        forward_returns = data_interface.get_forward_returns()  # 现在会自动读取配置中的forward_return_days
         
         if forward_returns.empty:
             print("❌ 前瞻收益计算失败")
