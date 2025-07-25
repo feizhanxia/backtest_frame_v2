@@ -108,3 +108,6 @@ dmypy.json
 data/
 *.parquet
 *.csv
+
+# Log files
+logs/
