@@ -148,11 +148,7 @@ factors:
     slow: 26
     description: "绝对价格振荡器 APO"
     
-  # Aroon指标
-  aroon14:
-    enabled: true
-    window: 14
-    description: "Aroon指标 (14日)"
+
     
   # Aroon振荡器
   aroonosc14:
@@ -355,11 +351,6 @@ factors:
     window: 14
     description: "中点价格 MIDPRICE (14日)"
     
-  # 希尔伯特变换趋势线
-  ht_trendline:
-    enabled: true
-    description: "希尔伯特变换趋势线 HT_TRENDLINE"
-    
   # ========== 新增的动量指标 ==========
   
   # ADX评级
@@ -424,13 +415,7 @@ factors:
     window: 10
     description: "变化率比率100倍 ROCR100 (10日)"
     
-  # 随机RSI
-  stochrsi14:
-    enabled: true
-    window: 14
-    fastk: 5
-    fastd: 3
-    description: "随机RSI STOCHRSI (14日)"
+
     
   # ========== 新增的成交量指标 ==========
   
@@ -441,42 +426,10 @@ factors:
     
   # ========== 新增的周期指标 (全新类别) ==========
   
-  # 希尔伯特变换 - 主导周期
-  ht_dcperiod:
-    enabled: true
-    description: "希尔伯特变换主导周期 HT_DCPERIOD"
-    
-  # 希尔伯特变换 - 主导周期相位
-  ht_dcphase:
-    enabled: true
-    description: "希尔伯特变换主导周期相位 HT_DCPHASE"
-    
-  # 希尔伯特变换 - 相位分量(同相)
-  ht_phasor_inphase:
-    enabled: true
-    description: "希尔伯特变换相位分量同相 HT_PHASOR_INPHASE"
-    
-  # 希尔伯特变换 - 相位分量(正交)
-  ht_phasor_quadrature:
-    enabled: true
-    description: "希尔伯特变换相位分量正交 HT_PHASOR_QUADRATURE"
-    
-  # 希尔伯特变换 - 正弦波
-  ht_sine:
-    enabled: true
-    description: "希尔伯特变换正弦波 HT_SINE"
-    
-  # 希尔伯特变换 - 领先正弦波
-  ht_leadsine:
-    enabled: true
-    description: "希尔伯特变换领先正弦波 HT_LEADSINE"
-    
-  # 希尔伯特变换 - 趋势vs周期模式
-  ht_trendmode:
-    enabled: true
-    description: "希尔伯特变换趋势vs周期模式 HT_TRENDMODE"
-    
+  # 周期指标已删除 - 希尔伯特变换因子存在计算问题，暂时移除
 
+
+# 数据预处理配置
 
 # 数据预处理配置
 preprocessing:
