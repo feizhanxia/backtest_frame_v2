@@ -10,7 +10,6 @@ backtest_frame_v2/
 │   ├── factor_engine.py     # 因子计算引擎 (6种技术因子)
 │   ├── ic_engine.py         # IC分析引擎 (因子有效性)
 │   ├── fusion_engine.py     # 因子融合引擎 (多因子策略)
-│   ├── cleaner.py           # 数据清洗工具
 │   ├── storage.py           # 数据存储工具
 │   └── universe_filter.py   # 高级标的池筛选
 │

@@ -9,7 +9,7 @@ import os
 # 将项目根目录添加到 Python 路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from engine import data_fetcher as F, cleaner as C, storage as S
+from engine import data_fetcher as F, storage as S
 
 # 确保logs目录存在
 logs_dir = Path(__file__).resolve().parents[1] / "logs"
@@ -55,8 +55,7 @@ def process_target(code, force_refresh=False):
             logger.warning(f"⚠️ {code} 数据量不足（仅{len(price)}个交易日），跳过处理")
             return False
         
-        # 清洗价格数据（移除停牌日等）
-        price = C.clean_price(price)
+        # ETF/指数不涉及停牌，直接处理价格数据
         
         # ETF/指数只需要价格数据，直接存储
         if price is not None and not price.empty:
