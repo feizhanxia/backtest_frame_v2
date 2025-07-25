@@ -2,9 +2,9 @@
 
 # 数据配置
 data:
-  start_date: "20220101"
+  start_date: "20200101"
   end_date: "20250722"
-  universe_file: "config/universe.csv"
+  universe_file: "config/universe_local.csv"
   
 # 数据路径
 paths:
@@ -51,19 +51,8 @@ factors:
     signal: 9
     description: "MACD信号因子"
     
-  # 删除财务类因子（ETF/指数不适用）
-  # inv_pb: 已删除
-  # roe: 已删除
     
-  # 质量因子
-  roe:
-    enabled: false  # 缺失roe_ttm数据，暂时禁用
-    description: "ROE_TTM"
     
-  # 规模因子
-  size:
-    enabled: false  # 缺失shares_out/mv数据，暂时禁用
-    description: "对数流通市值(负值)"
     
   # MACD因子
   macd:
