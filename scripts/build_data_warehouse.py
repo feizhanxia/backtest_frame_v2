@@ -77,9 +77,10 @@ def main():
     logger.info("开始构建ETF/指数数据仓库...")
     
     # 读取标的池 - 可以选择使用小标的池进行测试
-    universe_file = "universe_small.csv"  # 使用小标的池
+    # universe_file = "universe_small.csv"  # 使用小标的池
     # universe_file = "universe.csv"      # 使用完整标的池
-    
+    universe_file = "universe_local.csv"  # 使用本地标的池
+
     # 检查是否需要强制刷新
     import sys
     force_refresh = "--force" in sys.argv or "-f" in sys.argv
