@@ -62,7 +62,7 @@ preprocessing:
     enabled: true
   forward_fill:
     enabled: true          # 🔧 重新启用前向填充
-    max_days: 15           # 增加到15天，改善覆盖率
+    max_days: 20           # 增加到15天，改善覆盖率
 
 # IC分析配置
 ic:
