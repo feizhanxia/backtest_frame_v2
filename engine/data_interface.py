@@ -11,6 +11,7 @@ from typing import Dict, List, Optional, Tuple
 import yaml
 import glob
 from datetime import datetime, timedelta
+from .universe_filter import UniverseFilter
 
 class DataInterface:
     """统一数据访问接口"""
@@ -23,6 +24,14 @@ class DataInterface:
         """
         self.base_path = Path(__file__).parent.parent
         self.config = self._load_config(config_path)
+        
+        # 初始化universe筛选器
+        self.universe_filter = UniverseFilter(config_path)
+        
+        # 自动更新universe（如果启用）
+        if self.config.get('universe_filter', {}).get('enabled', False):
+            self._auto_update_universe_if_needed()
+        
         self.universe = self._load_universe()
         
     def _load_config(self, config_path: str) -> dict:
@@ -31,11 +40,50 @@ class DataInterface:
         with open(config_file, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
     
+    def _auto_update_universe_if_needed(self):
+        """如果需要则自动更新universe"""
+        try:
+            filter_config = self.config.get('universe_filter', {})
+            if not filter_config.get('enabled', False):
+                return
+            
+            original_universe_file = self.base_path / self.config['data']['universe_file']
+            # 自动生成高质量universe文件名
+            high_quality_file = original_universe_file.parent / f"universe_high_quality.csv"
+            
+            # 检查文件是否存在及是否需要更新
+            if high_quality_file.exists():
+                auto_update_days = filter_config.get('auto_update_days', 7)
+                file_age_days = (datetime.now().timestamp() - high_quality_file.stat().st_mtime) / (24 * 3600)
+                
+                if file_age_days < auto_update_days:
+                    return  # 文件较新，无需更新
+            
+            # 执行自动更新
+            print("检测到需要更新universe，正在自动筛选高质量标的...")
+            success = self.universe_filter.auto_update_universe()
+            if success:
+                print("✅ Universe自动更新完成")
+            else:
+                print("⚠️ Universe自动更新失败，将使用现有配置")
+                
+        except Exception as e:
+            print(f"⚠️ Universe自动更新过程中出错: {e}")
+    
     def _load_universe(self) -> List[str]:
-        """加载ETF/指数池"""
-        universe_file = self.base_path / self.config['data']['universe_file']
-        if universe_file.exists():
-            df = pd.read_csv(universe_file)
+        """加载ETF/指数池，优先使用高质量universe"""
+        original_universe_file = self.base_path / self.config['data']['universe_file']
+        high_quality_file = original_universe_file.parent / "universe_high_quality.csv"
+        
+        # 如果启用了筛选并且高质量文件存在，优先使用高质量文件
+        filter_enabled = self.config.get('universe_filter', {}).get('enabled', False)
+        if filter_enabled and high_quality_file.exists():
+            print(f"使用高质量universe: {high_quality_file}")
+            df = pd.read_csv(high_quality_file)
+            return df['ts_code'].tolist()
+        elif original_universe_file.exists():
+            print(f"使用原始universe: {original_universe_file}")
+            df = pd.read_csv(original_universe_file)
             return df['ts_code'].tolist()
         else:
             # 如果没有universe文件，从processed数据推断
@@ -73,6 +121,9 @@ class DataInterface:
         
         print(f"正在读取价格数据: {start_date} 到 {end_date}")
         
+        # 只处理universe中指定的标的
+        target_codes = set(self.universe)  # 使用universe中的标的列表
+        
         # 查找所有processed parquet文件
         parquet_files = glob.glob(str(processed_path / "**/*.parquet"), recursive=True)
         
@@ -103,6 +154,10 @@ class DataInterface:
                 ts_codes = df['ts_code'].unique()
                 
                 for ts_code in ts_codes:
+                    # 只处理universe中的标的
+                    if ts_code not in target_codes:
+                        continue
+                        
                     stock_data = df[df['ts_code'] == ts_code].copy()
                     stock_data = stock_data.sort_index()
                     
@@ -148,6 +203,15 @@ class DataInterface:
         
         print(f"价格数据读取完成，共{len(common_index) if common_index is not None else 0}个交易日，"
               f"{len(price_data['close'].columns) if not price_data['close'].empty else 0}个标的")
+        
+        # 显示universe过滤信息
+        loaded_codes = set(price_data['close'].columns) if not price_data['close'].empty else set()
+        print(f"Universe配置: {len(target_codes)}个标的，实际加载: {len(loaded_codes)}个标的")
+        
+        # 显示缺失的标的（在universe中但没有数据的）
+        missing_codes = target_codes - loaded_codes
+        if missing_codes:
+            print(f"警告: {len(missing_codes)}个标的在universe中但缺少数据: {sorted(list(missing_codes))[:10]}{'...' if len(missing_codes) > 10 else ''}")
         
         return price_data
     

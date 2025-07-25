@@ -2,9 +2,9 @@
 
 # 数据配置
 data:
-  start_date: "20200101"
+  start_date: "20230101"
   end_date: "20250722"
-  universe_file: "config/universe_local.csv"
+  universe_file: "config/universe_local.csv"  # 原始universe文件，系统将自动筛选高质量标的
   
 # 数据路径
 paths:
@@ -51,16 +51,7 @@ factors:
     signal: 9
     description: "MACD信号因子"
     
-    
-    
-    
-  # MACD因子
-  macd:
-    enabled: true
-    fast: 12
-    slow: 26
-    signal: 9
-    description: "MACD信号线因子"
+
 
 # 数据预处理配置
 preprocessing:
@@ -105,3 +96,12 @@ fusion:
 parallel:
   n_jobs: 4
   use_multiprocessing: false
+
+# Universe质量筛选配置
+universe_filter:
+  enabled: true  # 是否启用自动筛选
+  min_coverage_rate: 0.65  # 最低综合覆盖率
+  min_close_coverage: 0.8  # 最低收盘价覆盖率  
+  min_trading_days: 100   # 最少交易天数
+  max_universe_size: 150  # 最大标的数量
+  auto_update_days: 7     # 自动更新间隔（天）

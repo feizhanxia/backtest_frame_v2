@@ -39,8 +39,8 @@ def main():
         
         print(f"找到 {len(tracking_codes)} 个唯一的跟踪指数代码")
         
-        # 创建DataFrame并保存为CSV
-        universe_df = pd.DataFrame(tracking_codes, columns=['code'])
+        # 创建DataFrame并保存为CSV，使用ts_code列名以匹配系统预期
+        universe_df = pd.DataFrame(tracking_codes, columns=['ts_code'])
         universe_df.to_csv(output_file, index=False, encoding='utf-8')
         
         print(f"成功生成universe文件: {output_file}")

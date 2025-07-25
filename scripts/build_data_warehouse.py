@@ -113,7 +113,7 @@ def main():
             except Exception as e:
                 logger.error(f"{code} 处理失败: {str(e)}")
     
-    logger.info(f"✅ 数据仓刷新完成，成功处理 {success_count}/{len(codes)} 只股票")
+    logger.info(f"✅ 数据仓刷新完成，成功处理 {success_count}/{len(codes)} 个标的")
 
 if __name__ == "__main__":
     main()

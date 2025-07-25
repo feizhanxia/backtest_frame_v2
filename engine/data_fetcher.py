@@ -166,8 +166,8 @@ def fetch_daily(ts_code: str, start: str = None, end: str = None, asset_type: st
         if asset_type == 'auto':
             if ts_code.startswith(('510', '511', '512', '513', '515', '516', '518')):
                 asset_type = 'fund'  # ETF
-            elif (ts_code.startswith(('000', '399')) and ('SH' in ts_code or 'SZ' in ts_code)) or \
-                 (ts_code.endswith('.CSI')):
+            elif (ts_code.startswith(('000', '399', '950')) and ('SH' in ts_code or 'SZ' in ts_code)) or \
+                (ts_code.endswith('.CSI')) or (ts_code.endswith('.CNI')):
                 # 指数（000300.SH, 399001.SZ, 932000.CSI等）
                 asset_type = 'index'
             else:
@@ -181,29 +181,27 @@ def fetch_daily(ts_code: str, start: str = None, end: str = None, asset_type: st
             if df is None or df.empty:
                 # 备选：使用pro_bar接口
                 df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
-                               adj='qfq', freq='D', asset='FD')
+                                freq='D', asset='FD')
                 time.sleep(1.2)  # API频率控制
             # !TODO: ETF数据需要获取复权因子来进行额外处理
         elif asset_type == 'index':
             # 指数使用index_daily接口
-            df = pro.index_daily(ts_code=ts_code, start_date=start, end_date=end)
+            df = pro.index_daily(ts_code=ts_code)
             time.sleep(1.2)  # API频率控制：每分钟不超过50次
             if df is None or df.empty:
                 # 备选：使用pro_bar接口
-                df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
-                               freq='D', asset='I')
+                df = ts.pro_bar(ts_code=ts_code, freq='D', asset='I')
                 time.sleep(1.2)  # API频率控制
         else:
             # 股票使用原有逻辑
             df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
-                           adj='qfq', freq='D', asset='E')
+                            adj='qfq', freq='D', asset='E')
             time.sleep(1.2)  # API频率控制：每分钟不超过50次
         
         # 如果主要接口失败，尝试通用pro_bar接口
         if df is None or df.empty:
             print(f"警告：主接口获取 {ts_code} 的数据为空，尝试通用接口...")
-            df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end, 
-                           adj='qfq', freq='D')
+            df = ts.pro_bar(ts_code=ts_code, adj='qfq', freq='D')
             time.sleep(1.2)  # API频率控制
         
         # 如果数据仍然为空，则记录错误

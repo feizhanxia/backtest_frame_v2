@@ -92,7 +92,7 @@ def generate_factor_report(factors_df: pd.DataFrame):
         for factor_name in factor_names:
             factor_data = factors_df[factor_name]
             total_values = factor_data.size
-            valid_values = factor_data.dropna().size
+            valid_values = factor_data.notna().sum().sum()
             coverage = valid_values / total_values if total_values > 0 else 0
             
             print(f"     {factor_name}: {coverage:.2%} ({valid_values}/{total_values})")
@@ -109,13 +109,13 @@ def generate_factor_report(factors_df: pd.DataFrame):
             f.write(f"因子数量: {len(factor_names)}\n")
             f.write(f"标的数量: {len(factors_df.columns.get_level_values(1).unique())}\n")
             f.write(f"总观测值: {factors_df.size}\n")
-            f.write(f"有效观测值: {factors_df.dropna().size}\n\n")
+            f.write(f"有效观测值: {factors_df.notna().sum().sum()}\n\n")
             
             f.write("各因子覆盖率:\n")
             for factor_name in factor_names:
                 factor_data = factors_df[factor_name]
                 total_values = factor_data.size
-                valid_values = factor_data.dropna().size
+                valid_values = factor_data.notna().sum().sum()
                 coverage = valid_values / total_values if total_values > 0 else 0
                 f.write(f"  {factor_name}: {coverage:.2%}\n")
         
