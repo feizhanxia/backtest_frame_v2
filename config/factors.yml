@@ -415,6 +415,236 @@ factors:
     window: 10
     description: "变化率比率100倍 ROCR100 (10日)"
     
+  # ========== 新增的重叠研究指标 ==========
+  
+  # 布林带上轨
+  bbands_upper:
+    enabled: true
+    window: 20
+    std_dev: 2.0
+    description: "布林带上轨 BBANDS Upper"
+    
+  # 布林带下轨
+  bbands_lower:
+    enabled: true
+    window: 20
+    std_dev: 2.0
+    description: "布林带下轨 BBANDS Lower"
+    
+  # MESA自适应移动平均线
+  mama_adaptive:
+    enabled: true
+    fastlimit: 0.5
+    slowlimit: 0.05
+    description: "MESA自适应移动平均线 MAMA"
+    
+  # MESA自适应移动平均线跟随者
+  fama_adaptive:
+    enabled: true
+    fastlimit: 0.5
+    slowlimit: 0.05
+    description: "MESA自适应移动平均线跟随者 FAMA"
+    
+  # 扩展抛物线SAR
+  sarext_extended:
+    enabled: true
+    start_value: 0.0
+    acceleration: 0.02
+    maximum: 0.2
+    description: "扩展抛物线SAR SAREXT"
+    
+  # 可控类型移动平均线
+  ma_sma:
+    enabled: true
+    window: 20
+    ma_type: 0  # SMA
+    description: "可控类型移动平均线 MA-SMA (20日)"
+    
+  # 可控类型移动平均线-EMA
+  ma_ema:
+    enabled: true
+    window: 20
+    ma_type: 1  # EMA
+    description: "可控类型移动平均线 MA-EMA (20日)"
+    
+  # 可控类型移动平均线-WMA
+  ma_wma:
+    enabled: true
+    window: 20
+    ma_type: 2  # WMA
+    description: "可控类型移动平均线 MA-WMA (20日)"
+    
+  # ========== 新增的统计函数 ==========
+  
+  # 线性回归角度
+  linearreg_angle:
+    enabled: true
+    window: 14
+    description: "线性回归角度 LINEARREG_ANGLE (14日)"
+    
+  # 线性回归截距
+  linearreg_intercept:
+    enabled: true
+    window: 14
+    description: "线性回归截距 LINEARREG_INTERCEPT (14日)"
+    
+  # 线性回归斜率
+  linearreg_slope:
+    enabled: true
+    window: 14
+    description: "线性回归斜率 LINEARREG_SLOPE (14日)"
+    
+  # ========== K线形态识别指标 ==========
+  
+  # 十字星形态
+  cdl_doji:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    description: "十字星形态 CDLDOJI"
+    
+  # 锤头形态
+  cdl_hammer:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    description: "锤头形态 CDLHAMMER"
+    
+  # 吞没形态
+  cdl_engulfing:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    description: "吞没形态 CDLENGULFING"
+    
+  # 晨星形态
+  cdl_morning_star:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    penetration: 0.3
+    description: "晨星形态 CDLMORNINGSTAR"
+    
+  # 黄昏星形态
+  cdl_evening_star:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    penetration: 0.3
+    description: "黄昏星形态 CDLEVENINGSTAR"
+    
+  # 流星形态
+  cdl_shooting_star:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    description: "流星形态 CDLSHOOTINGSTAR"
+    
+  # 上吊线形态
+  cdl_hanging_man:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    description: "上吊线形态 CDLHANGINGMAN"
+    
+  # 三只乌鸦形态
+  cdl_three_black_crows:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    description: "三只乌鸦形态 CDL3BLACKCROWS"
+    
+  # 三个白武士形态
+  cdl_three_white_soldiers:
+    enabled: true  # 暂时禁用，需要高质量OHLC数据
+    description: "三个白武士形态 CDL3WHITESOLDIERS"
+    
+  # ========== 数学变换指标 ==========
+  
+  # 自然对数变换
+  ln_transform:
+    enabled: true
+    description: "自然对数变换 LN"
+    
+  # 平方根变换
+  sqrt_transform:
+    enabled: true
+    description: "平方根变换 SQRT"
+    
+  # 双曲正切变换
+  tanh_transform:
+    enabled: true  # 暂时禁用，需要调试数据处理
+    description: "双曲正切变换 TANH"
+    
+  # 滚动最大值
+  max_value_30:
+    enabled: true
+    window: 30
+    description: "滚动最大值 MAX (30日)"
+    
+  # 滚动最小值
+  min_value_30:
+    enabled: true
+    window: 30
+    description: "滚动最小值 MIN (30日)"
+    
+  # 滚动求和
+  sum_value_30:
+    enabled: true
+    window: 30
+    description: "滚动求和 SUM (30日)"
+    
+  # 滚动极差
+  minmax_range:
+    enabled: true
+    window: 30
+    description: "滚动极差 MINMAX Range (30日)"
+    
+  # ========== 新增的慢速随机指标 ==========
+  
+  # 慢速随机指标K值
+  stoch_slow_k:
+    enabled: true
+    fastk_period: 5
+    slowk_period: 3
+    slowd_period: 3
+    description: "慢速随机指标K值 STOCH K"
+    
+  # 慢速随机指标D值
+  stoch_slow_d:
+    enabled: true
+    fastk_period: 5
+    slowk_period: 3
+    slowd_period: 3
+    description: "慢速随机指标D值 STOCH D"
+    
+  # ========== 新增的三角函数变换 ==========
+  
+  # 反余弦变换
+  acos_transform:
+    enabled: true
+    description: "反余弦变换 ACOS"
+    
+  # 反正弦变换
+  asin_transform:
+    enabled: true
+    description: "反正弦变换 ASIN"
+    
+  # 反正切变换
+  atan_transform:
+    enabled: true
+    description: "反正切变换 ATAN"
+    
+  # 双曲余弦变换
+  cosh_transform:
+    enabled: true
+    description: "双曲余弦变换 COSH"
+    
+  # 双曲正弦变换
+  sinh_transform:
+    enabled: true
+    description: "双曲正弦变换 SINH"
+    
+  # 正切变换
+  tan_transform:
+    enabled: true
+    description: "正切变换 TAN"
+    
+  # ========== 数学运算符 ==========
+  
+  # 价格相加 (需要两个价格序列)
+  # price_add:
+  #   enabled: true  # 暂时禁用，需要特殊处理
+  #   description: "价格相加 ADD"
+    
+  # 价格相除 (需要两个价格序列)
+  # price_div:
+  #   enabled: true  # 暂时禁用，需要特殊处理
+  #   description: "价格相除 DIV"
 
     
   # ========== 新增的成交量指标 ==========

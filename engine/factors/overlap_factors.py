@@ -102,10 +102,15 @@ class OverlapFactors(BaseFactor):
         result = pd.DataFrame(index=close.index, columns=close.columns)
         
         for col in close.columns:
-            series_data = close[col].dropna()
-            if len(series_data) >= window * 3:  # T3需要更多数据
+            series_data = close[col].ffill().dropna()
+            if len(series_data) >= window * 3:  # 减少数据要求
                 try:
-                    calc_result = talib.T3(series_data.values, timeperiod=window, vfactor=vfactor)
+                    calc_result = talib.T3(
+                        series_data.values.astype(np.float64), 
+                        timeperiod=window, 
+                        vfactor=vfactor
+                    )
+                    # T3可能返回大量NaN，这是正常的
                     result.loc[series_data.index, col] = calc_result
                 except Exception as e:
                     print(f"T3 calculation failed for {col}: {e}")
@@ -126,6 +131,22 @@ class OverlapFactors(BaseFactor):
         if not self.validate_input_data(close):
             return pd.DataFrame()
         return self.apply_talib_to_dataframe(talib.MIDPOINT, close, timeperiod=window)
+    
+    def ma_controllable(self, close: pd.DataFrame, window: int = 20, ma_type: int = 0) -> pd.DataFrame:
+        """可控制类型的移动平均线
+        
+        Args:
+            close: 收盘价矩阵
+            window: 计算窗口
+            ma_type: 移动平均类型 (0=SMA, 1=EMA, 2=WMA, 3=DEMA, 4=TEMA, 5=TRIMA, 6=KAMA, 7=MAMA, 8=T3)
+            
+        Returns:
+            可控制移动平均因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        return self.apply_talib_to_dataframe(talib.MA, close, timeperiod=window, matype=ma_type)
     
     def midprice_14(self, high: pd.DataFrame, low: pd.DataFrame, window: int = 14) -> pd.DataFrame:
         """中点价格
@@ -408,5 +429,174 @@ class OverlapFactors(BaseFactor):
                 except Exception as e:
                     print(f"WCLPRICE calculation failed for {col}: {e}")
                     continue
+        
+        return result
+    
+    def bbands_upper(self, close: pd.DataFrame, window: int = 20, std_dev: float = 2.0) -> pd.DataFrame:
+        """布林带上轨
+        
+        Args:
+            close: 收盘价矩阵
+            window: 计算窗口
+            std_dev: 标准差倍数
+            
+        Returns:
+            布林带上轨因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        result = pd.DataFrame(index=close.index, columns=close.columns)
+        
+        for col in close.columns:
+            series_data = close[col].ffill().dropna()
+            if len(series_data) >= window + 5:
+                try:
+                    upperband, middleband, lowerband = talib.BBANDS(
+                        series_data.values, timeperiod=window, 
+                        nbdevup=std_dev, nbdevdn=std_dev, matype=0
+                    )
+                    result.loc[series_data.index, col] = upperband
+                except Exception as e:
+                    print(f"BBANDS upper calculation failed for {col}: {e}")
+                    continue
+        
+        return result
+    
+    def bbands_lower(self, close: pd.DataFrame, window: int = 20, std_dev: float = 2.0) -> pd.DataFrame:
+        """布林带下轨
+        
+        Args:
+            close: 收盘价矩阵
+            window: 计算窗口
+            std_dev: 标准差倍数
+            
+        Returns:
+            布林带下轨因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        result = pd.DataFrame(index=close.index, columns=close.columns)
+        
+        for col in close.columns:
+            series_data = close[col].ffill().dropna()
+            if len(series_data) >= window + 5:
+                try:
+                    upperband, middleband, lowerband = talib.BBANDS(
+                        series_data.values, timeperiod=window, 
+                        nbdevup=std_dev, nbdevdn=std_dev, matype=0
+                    )
+                    result.loc[series_data.index, col] = lowerband
+                except Exception as e:
+                    print(f"BBANDS lower calculation failed for {col}: {e}")
+                    continue
+        
+        return result
+    
+    def mama_adaptive(self, close: pd.DataFrame, fastlimit: float = 0.5, slowlimit: float = 0.05) -> pd.DataFrame:
+        """MESA自适应移动平均线
+        
+        Args:
+            close: 收盘价矩阵
+            fastlimit: 快速限制
+            slowlimit: 慢速限制
+            
+        Returns:
+            MAMA因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        result = pd.DataFrame(index=close.index, columns=close.columns)
+        
+        for col in close.columns:
+            series_data = close[col].ffill().dropna()
+            if len(series_data) >= 32:  # MAMA需要较长的数据序列
+                try:
+                    mama, fama = talib.MAMA(
+                        series_data.values, fastlimit=fastlimit, slowlimit=slowlimit
+                    )
+                    result.loc[series_data.index, col] = mama
+                except Exception as e:
+                    print(f"MAMA calculation failed for {col}: {e}")
+                    continue
+        
+        return result
+    
+    def fama_adaptive(self, close: pd.DataFrame, fastlimit: float = 0.5, slowlimit: float = 0.05) -> pd.DataFrame:
+        """MESA自适应移动平均线的跟随者
+        
+        Args:
+            close: 收盘价矩阵
+            fastlimit: 快速限制
+            slowlimit: 慢速限制
+            
+        Returns:
+            FAMA因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        result = pd.DataFrame(index=close.index, columns=close.columns)
+        
+        for col in close.columns:
+            series_data = close[col].ffill().dropna()
+            if len(series_data) >= 32:  # MAMA需要较长的数据序列
+                try:
+                    mama, fama = talib.MAMA(
+                        series_data.values, fastlimit=fastlimit, slowlimit=slowlimit
+                    )
+                    result.loc[series_data.index, col] = fama
+                except Exception as e:
+                    print(f"FAMA calculation failed for {col}: {e}")
+                    continue
+        
+        return result
+    
+    def sarext_extended(self, high: pd.DataFrame, low: pd.DataFrame, 
+                       start_value: float = 0.0, acceleration: float = 0.02, 
+                       maximum: float = 0.2) -> pd.DataFrame:
+        """扩展抛物线SAR
+        
+        Args:
+            high: 最高价矩阵
+            low: 最低价矩阵
+            start_value: 起始值
+            acceleration: 加速因子
+            maximum: 最大值
+            
+        Returns:
+            SAREXT因子矩阵
+        """
+        if not self.validate_input_data(high, low):
+            return pd.DataFrame()
+        
+        result = pd.DataFrame(index=high.index, columns=high.columns)
+        
+        for col in high.columns:
+            if col in low.columns:
+                high_series = high[col].ffill().dropna()
+                low_series = low[col].ffill().dropna()
+                common_index = high_series.index.intersection(low_series.index)
+                
+                if len(common_index) >= 10:
+                    try:
+                        sarext_result = talib.SAREXT(
+                            high_series[common_index].values,
+                            low_series[common_index].values,
+                            startvalue=start_value,
+                            offsetonreverse=0.0,
+                            accelerationinitlong=acceleration,
+                            accelerationlong=acceleration,
+                            accelerationmaxlong=maximum,
+                            accelerationinitshort=acceleration,
+                            accelerationshort=acceleration,
+                            accelerationmaxshort=maximum
+                        )
+                        result.loc[common_index, col] = sarext_result
+                    except Exception as e:
+                        print(f"SAREXT calculation failed for {col}: {e}")
+                        continue
         
         return result

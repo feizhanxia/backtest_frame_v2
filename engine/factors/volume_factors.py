@@ -46,10 +46,10 @@ class VolumeFactors(BaseFactor):
                     
                     if len(common_index) >= 20:
                         calc_result = talib.AD(
-                            h_data[common_index].values,
-                            l_data[common_index].values,
-                            c_data[common_index].values,
-                            v_data[common_index].values
+                            h_data[common_index].values.astype(np.float64),
+                            l_data[common_index].values.astype(np.float64),
+                            c_data[common_index].values.astype(np.float64),
+                            v_data[common_index].values.astype(np.float64)
                         )
                         result.loc[common_index, col] = calc_result
                 except Exception as e:
@@ -91,10 +91,10 @@ class VolumeFactors(BaseFactor):
                     
                     if len(common_index) >= max(fast, slow) + 10:
                         calc_result = talib.ADOSC(
-                            h_data[common_index].values,
-                            l_data[common_index].values,
-                            c_data[common_index].values,
-                            v_data[common_index].values,
+                            h_data[common_index].values.astype(np.float64),
+                            l_data[common_index].values.astype(np.float64),
+                            c_data[common_index].values.astype(np.float64),
+                            v_data[common_index].values.astype(np.float64),
                             fastperiod=fast, slowperiod=slow
                         )
                         result.loc[common_index, col] = calc_result

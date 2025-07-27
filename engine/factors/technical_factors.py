@@ -144,3 +144,48 @@ class TechnicalFactors(BaseFactor):
         if not self.validate_input_data(close):
             return pd.DataFrame()
         return self.apply_talib_to_dataframe(talib.VAR, close, timeperiod=window)
+    
+    def linearreg_angle(self, close: pd.DataFrame, window: int = 14) -> pd.DataFrame:
+        """线性回归角度
+        
+        Args:
+            close: 收盘价矩阵
+            window: 计算窗口
+            
+        Returns:
+            线性回归角度因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        return self.apply_talib_to_dataframe(talib.LINEARREG_ANGLE, close, timeperiod=window)
+    
+    def linearreg_intercept(self, close: pd.DataFrame, window: int = 14) -> pd.DataFrame:
+        """线性回归截距
+        
+        Args:
+            close: 收盘价矩阵
+            window: 计算窗口
+            
+        Returns:
+            线性回归截距因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        return self.apply_talib_to_dataframe(talib.LINEARREG_INTERCEPT, close, timeperiod=window)
+    
+    def linearreg_slope(self, close: pd.DataFrame, window: int = 14) -> pd.DataFrame:
+        """线性回归斜率
+        
+        Args:
+            close: 收盘价矩阵
+            window: 计算窗口
+            
+        Returns:
+            线性回归斜率因子矩阵
+        """
+        if not self.validate_input_data(close):
+            return pd.DataFrame()
+        
+        return self.apply_talib_to_dataframe(talib.LINEARREG_SLOPE, close, timeperiod=window)

@@ -33,13 +33,31 @@ class BaseFactor:
         if factor.empty:
             return factor
             
-        # 截面标准化
-        standardized = factor.sub(factor.mean(axis=1), axis=0).div(factor.std(axis=1), axis=0)
+        # 截面标准化，但要处理标准差为0的情况
+        result = factor.copy()
+        
+        for idx in factor.index:
+            row = factor.loc[idx]
+            if row.isna().all():
+                continue
+                
+            # 计算截面均值和标准差
+            row_mean = row.mean()
+            row_std = row.std()
+            
+            # 如果标准差为0（所有值相同），不进行标准化，保持原值
+            if pd.isna(row_std) or row_std == 0 or np.isclose(row_std, 0, atol=1e-10):
+                # 对于CDL等离散值因子，如果所有值相同，可以直接设为0
+                # 或者保持原值，这里选择保持原值
+                result.loc[idx] = row
+            else:
+                # 正常标准化
+                result.loc[idx] = (row - row_mean) / row_std
         
         # 处理无限值和NaN
-        standardized = standardized.replace([np.inf, -np.inf], np.nan)
+        result = result.replace([np.inf, -np.inf], np.nan)
         
-        return standardized
+        return result
     
     def winsorize(self, factor: pd.DataFrame, quantile: float = 0.05) -> pd.DataFrame:
         """去极值处理

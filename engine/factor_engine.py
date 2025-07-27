@@ -18,12 +18,14 @@ from .factors.overlap_factors import OverlapFactors
 from .factors.momentum_factors import MomentumFactors
 from .factors.volume_factors import VolumeFactors
 from .factors.technical_factors import TechnicalFactors
+from .factors.pattern_factors import PatternFactors
+from .factors.math_factors import MathFactors
 
 # 抑制 pandas 版本兼容性警告
 warnings.filterwarnings('ignore', category=FutureWarning, message='.*fillna.*method.*')
 warnings.filterwarnings('ignore', category=FutureWarning, message='.*Downcasting.*')
 
-class FactorEngine(PriceFactors, OverlapFactors, MomentumFactors, VolumeFactors, TechnicalFactors):
+class FactorEngine(PriceFactors, OverlapFactors, MomentumFactors, VolumeFactors, TechnicalFactors, PatternFactors, MathFactors):
     """
     模块化因子计算引擎
     通过多重继承整合各个因子类别
@@ -359,6 +361,161 @@ class FactorEngine(PriceFactors, OverlapFactors, MomentumFactors, VolumeFactors,
             # ========== 新增的成交量指标 ==========
             elif factor_name == 'obv_line':
                 factor_raw = self.obv_line(price_data['close'], price_data['vol'])
+                
+            # ========== 新增的重叠研究指标 ==========
+            elif factor_name == 'bbands_upper':
+                window = factor_config.get('window', 20)
+                std_dev = factor_config.get('std_dev', 2.0)
+                factor_raw = self.bbands_upper(price_data['close'], window, std_dev)
+                
+            elif factor_name == 'bbands_lower':
+                window = factor_config.get('window', 20)
+                std_dev = factor_config.get('std_dev', 2.0)
+                factor_raw = self.bbands_lower(price_data['close'], window, std_dev)
+                
+            elif factor_name == 'mama_adaptive':
+                fastlimit = factor_config.get('fastlimit', 0.5)
+                slowlimit = factor_config.get('slowlimit', 0.05)
+                factor_raw = self.mama_adaptive(price_data['close'], fastlimit, slowlimit)
+                
+            elif factor_name == 'fama_adaptive':
+                fastlimit = factor_config.get('fastlimit', 0.5)
+                slowlimit = factor_config.get('slowlimit', 0.05)
+                factor_raw = self.fama_adaptive(price_data['close'], fastlimit, slowlimit)
+                
+            elif factor_name == 'sarext_extended':
+                start_value = factor_config.get('start_value', 0.0)
+                acceleration = factor_config.get('acceleration', 0.02)
+                maximum = factor_config.get('maximum', 0.2)
+                factor_raw = self.sarext_extended(price_data['high'], price_data['low'], 
+                                                start_value, acceleration, maximum)
+                
+            elif factor_name == 'ma_sma':
+                window = factor_config.get('window', 20)
+                ma_type = factor_config.get('ma_type', 0)
+                factor_raw = self.ma_controllable(price_data['close'], window, ma_type)
+                
+            elif factor_name == 'ma_ema':
+                window = factor_config.get('window', 20)
+                ma_type = factor_config.get('ma_type', 1)
+                factor_raw = self.ma_controllable(price_data['close'], window, ma_type)
+                
+            elif factor_name == 'ma_wma':
+                window = factor_config.get('window', 20)
+                ma_type = factor_config.get('ma_type', 2)
+                factor_raw = self.ma_controllable(price_data['close'], window, ma_type)
+                
+            # ========== 新增的统计函数 ==========
+            elif factor_name == 'linearreg_angle':
+                window = factor_config.get('window', 14)
+                factor_raw = self.linearreg_angle(price_data['close'], window)
+                
+            elif factor_name == 'linearreg_intercept':
+                window = factor_config.get('window', 14)
+                factor_raw = self.linearreg_intercept(price_data['close'], window)
+                
+            elif factor_name == 'linearreg_slope':
+                window = factor_config.get('window', 14)
+                factor_raw = self.linearreg_slope(price_data['close'], window)
+                
+            # ========== K线形态识别指标 ==========
+            elif factor_name == 'cdl_doji':
+                factor_raw = self.cdl_doji(price_data['open'], price_data['high'], 
+                                         price_data['low'], price_data['close'])
+                
+            elif factor_name == 'cdl_hammer':
+                factor_raw = self.cdl_hammer(price_data['open'], price_data['high'], 
+                                           price_data['low'], price_data['close'])
+                
+            elif factor_name == 'cdl_engulfing':
+                factor_raw = self.cdl_engulfing(price_data['open'], price_data['high'], 
+                                              price_data['low'], price_data['close'])
+                
+            elif factor_name == 'cdl_morning_star':
+                penetration = factor_config.get('penetration', 0.3)
+                factor_raw = self.cdl_morning_star(price_data['open'], price_data['high'], 
+                                                 price_data['low'], price_data['close'], penetration)
+                
+            elif factor_name == 'cdl_evening_star':
+                penetration = factor_config.get('penetration', 0.3)
+                factor_raw = self.cdl_evening_star(price_data['open'], price_data['high'], 
+                                                 price_data['low'], price_data['close'], penetration)
+                
+            elif factor_name == 'cdl_shooting_star':
+                factor_raw = self.cdl_shooting_star(price_data['open'], price_data['high'], 
+                                                  price_data['low'], price_data['close'])
+                
+            elif factor_name == 'cdl_hanging_man':
+                factor_raw = self.cdl_hanging_man(price_data['open'], price_data['high'], 
+                                                price_data['low'], price_data['close'])
+                
+            elif factor_name == 'cdl_three_black_crows':
+                factor_raw = self.cdl_three_black_crows(price_data['open'], price_data['high'], 
+                                                      price_data['low'], price_data['close'])
+                
+            elif factor_name == 'cdl_three_white_soldiers':
+                factor_raw = self.cdl_three_white_soldiers(price_data['open'], price_data['high'], 
+                                                         price_data['low'], price_data['close'])
+                
+            # ========== 数学变换指标 ==========
+            elif factor_name == 'ln_transform':
+                factor_raw = self.ln_transform(price_data['close'])
+                
+            elif factor_name == 'sqrt_transform':
+                factor_raw = self.sqrt_transform(price_data['close'])
+                
+            elif factor_name == 'tanh_transform':
+                factor_raw = self.tanh_transform(price_data['close'])
+                
+            elif factor_name == 'max_value_30':
+                window = factor_config.get('window', 30)
+                factor_raw = self.max_value(price_data['close'], window)
+                
+            elif factor_name == 'min_value_30':
+                window = factor_config.get('window', 30)
+                factor_raw = self.min_value(price_data['close'], window)
+                
+            elif factor_name == 'sum_value_30':
+                window = factor_config.get('window', 30)
+                factor_raw = self.sum_value(price_data['close'], window)
+                
+            elif factor_name == 'minmax_range':
+                window = factor_config.get('window', 30)
+                factor_raw = self.minmax_range(price_data['close'], window)
+                
+            # ========== 新增的慢速随机指标 ==========
+            elif factor_name == 'stoch_slow_k':
+                fastk_period = factor_config.get('fastk_period', 5)
+                slowk_period = factor_config.get('slowk_period', 3)
+                slowd_period = factor_config.get('slowd_period', 3)
+                factor_raw = self.stoch_slow_k(price_data['high'], price_data['low'], 
+                                             price_data['close'], fastk_period, slowk_period, slowd_period)
+                
+            elif factor_name == 'stoch_slow_d':
+                fastk_period = factor_config.get('fastk_period', 5)
+                slowk_period = factor_config.get('slowk_period', 3)
+                slowd_period = factor_config.get('slowd_period', 3)
+                factor_raw = self.stoch_slow_d(price_data['high'], price_data['low'], 
+                                             price_data['close'], fastk_period, slowk_period, slowd_period)
+                
+            # ========== 新增的三角函数变换 ==========
+            elif factor_name == 'acos_transform':
+                factor_raw = self.acos_transform(price_data['close'])
+                
+            elif factor_name == 'asin_transform':
+                factor_raw = self.asin_transform(price_data['close'])
+                
+            elif factor_name == 'atan_transform':
+                factor_raw = self.atan_transform(price_data['close'])
+                
+            elif factor_name == 'cosh_transform':
+                factor_raw = self.cosh_transform(price_data['close'])
+                
+            elif factor_name == 'sinh_transform':
+                factor_raw = self.sinh_transform(price_data['close'])
+                
+            elif factor_name == 'tan_transform':
+                factor_raw = self.tan_transform(price_data['close'])
                 
             # ========== 周期指标已删除 ==========
             # 希尔伯特变换因子存在计算问题，已暂时移除

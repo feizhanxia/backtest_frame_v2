@@ -223,10 +223,10 @@ class MomentumFactors(BaseFactor):
                     
                     if len(common_index) >= window + 5:
                         calc_result = talib.MFI(
-                            h_data[common_index].values,
-                            l_data[common_index].values,
-                            c_data[common_index].values,
-                            v_data[common_index].values,
+                            h_data[common_index].values.astype(np.float64),
+                            l_data[common_index].values.astype(np.float64),
+                            c_data[common_index].values.astype(np.float64),
+                            v_data[common_index].values.astype(np.float64),
                             timeperiod=window
                         )
                         result.loc[common_index, col] = calc_result
@@ -778,6 +778,100 @@ class MomentumFactors(BaseFactor):
                         result.loc[common_index, col] = calc_result
                     except Exception as e:
                         print(f"PLUS_DM calculation failed for {col}: {e}")
+                        continue
+        
+        return result
+    
+    def stoch_slow_k(self, high: pd.DataFrame, low: pd.DataFrame, close: pd.DataFrame,
+                     fastk_period: int = 5, slowk_period: int = 3, slowd_period: int = 3) -> pd.DataFrame:
+        """慢速随机指标K值
+        
+        Args:
+            high: 最高价矩阵
+            low: 最低价矩阵
+            close: 收盘价矩阵
+            fastk_period: 快速K周期
+            slowk_period: 慢速K周期
+            slowd_period: 慢速D周期
+            
+        Returns:
+            慢速随机指标K值因子矩阵
+        """
+        if not self.validate_input_data(high, low, close):
+            return pd.DataFrame()
+        
+        result = pd.DataFrame(index=high.index, columns=high.columns)
+        
+        for col in high.columns:
+            if col in low.columns and col in close.columns:
+                high_series = high[col].ffill().dropna()
+                low_series = low[col].ffill().dropna()
+                close_series = close[col].ffill().dropna()
+                common_index = high_series.index.intersection(low_series.index)\
+                                               .intersection(close_series.index)
+                
+                if len(common_index) >= max(fastk_period, slowk_period, slowd_period) + 5:
+                    try:
+                        slowk, slowd = talib.STOCH(
+                            high_series[common_index].values,
+                            low_series[common_index].values,
+                            close_series[common_index].values,
+                            fastk_period=fastk_period,
+                            slowk_period=slowk_period,
+                            slowk_matype=0,
+                            slowd_period=slowd_period,
+                            slowd_matype=0
+                        )
+                        result.loc[common_index, col] = slowk
+                    except Exception as e:
+                        print(f"STOCH slow K calculation failed for {col}: {e}")
+                        continue
+        
+        return result
+    
+    def stoch_slow_d(self, high: pd.DataFrame, low: pd.DataFrame, close: pd.DataFrame,
+                     fastk_period: int = 5, slowk_period: int = 3, slowd_period: int = 3) -> pd.DataFrame:
+        """慢速随机指标D值
+        
+        Args:
+            high: 最高价矩阵
+            low: 最低价矩阵
+            close: 收盘价矩阵
+            fastk_period: 快速K周期
+            slowk_period: 慢速K周期
+            slowd_period: 慢速D周期
+            
+        Returns:
+            慢速随机指标D值因子矩阵
+        """
+        if not self.validate_input_data(high, low, close):
+            return pd.DataFrame()
+        
+        result = pd.DataFrame(index=high.index, columns=high.columns)
+        
+        for col in high.columns:
+            if col in low.columns and col in close.columns:
+                high_series = high[col].ffill().dropna()
+                low_series = low[col].ffill().dropna()
+                close_series = close[col].ffill().dropna()
+                common_index = high_series.index.intersection(low_series.index)\
+                                               .intersection(close_series.index)
+                
+                if len(common_index) >= max(fastk_period, slowk_period, slowd_period) + 5:
+                    try:
+                        slowk, slowd = talib.STOCH(
+                            high_series[common_index].values,
+                            low_series[common_index].values,
+                            close_series[common_index].values,
+                            fastk_period=fastk_period,
+                            slowk_period=slowk_period,
+                            slowk_matype=0,
+                            slowd_period=slowd_period,
+                            slowd_matype=0
+                        )
+                        result.loc[common_index, col] = slowd
+                    except Exception as e:
+                        print(f"STOCH slow D calculation failed for {col}: {e}")
                         continue
         
         return result
